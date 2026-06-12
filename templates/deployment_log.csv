@@ -1,0 +1,7 @@
+timestamp,event_type,box_id,site,action,observed_problem,battery_voltage,weather_notes,person,notes
+2026-06-01T00:00:00Z,start,BOX-001,TODO,"Started baseline co-location deployment",TODO,TODO,TODO,TODO,TODO
+2026-06-01T00:00:00Z,inspection,BOX-001,TODO,"Visual inspection",TODO,TODO,TODO,TODO,TODO
+2026-06-01T00:00:00Z,maintenance,BOX-001,TODO,"Battery/sensor/enclosure intervention",TODO,TODO,TODO,TODO,TODO
+2026-06-01T00:00:00Z,failure,BOX-001,TODO,"Failure observed",TODO,TODO,TODO,TODO,TODO
+2026-06-01T00:00:00Z,end,BOX-001,TODO,"Ended deployment",TODO,TODO,TODO,TODO,TODO
+
