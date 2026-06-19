@@ -217,6 +217,21 @@ Candidate materials and geometries should be classified before testing using pra
 | Manufacturability | Determines repeatability and cost | Simple prints, few supports, standard fasteners |
 | Maintainability | Determines field repair burden | Modular sensor access, replaceable shields, visible status indicators |
 
+### 4.7 Defense-relevant installation extension
+
+The same evaluation framework can support a defense-relevant extension focused on military installation resilience and force health. In that context, the box is not treated as a regulatory air-quality monitor or a life-safety alarm. It is treated as a supplemental, non-regulatory sensing node that provides local situational awareness for smoke, particulate matter, heat, humidity, and enclosure health.
+
+The initial defense-relevant use cases are:
+
+- wildfire-smoke monitoring around installation boundaries, housing, work areas, and mission-critical facilities;
+- training-range or prescribed-burn smoke monitoring where localized PM and wind conditions affect go/no-go or exposure decisions;
+- environmental anomaly monitoring near battery storage, charging areas, maintenance shops, and logistics spaces;
+- temporary monitoring during disaster recovery, fire response, or base infrastructure restoration.
+
+The defense-relevant prototype should preserve the core study's two-zone architecture: a sealed electronics and power compartment plus a ventilated, replaceable sensor shield. The added validation burden is ruggedness and operational auditability. In addition to raw and calibrated accuracy, the study should report AQI-style category agreement for PM2.5, alert-threshold behavior, uptime, local-storage recovery after power interruption, maintenance time, and environmental stress results for rain, solar heating, dust, humidity, handling, and brownout cycles.
+
+This extension should remain dual-use and unclassified unless a sponsor provides specific requirements. The first publishable claim should be narrow: a ruggedized low-cost node can provide validated supplemental monitoring for installation smoke and air-quality awareness. Claims about regulatory compliance, fire detection, CBRN detection, or formal military qualification require separate certification and are out of scope for the first study.
+
 ## 5. Results
 
 This V1.0 draft does not include measured lab results yet. The results section below is the intended reporting structure.
@@ -257,7 +272,21 @@ Report runtime and data loss as engineering results, not as secondary notes.
 | Sensor dropout events | TODO | Sensor or firmware limitation |
 | Maintenance events | TODO | Practical field burden |
 
-### 5.4 Failure modes
+### 5.4 Installation-awareness metrics
+
+For deployments where the box is used to support smoke, fire-response, range, or base-air-quality awareness, report operational metrics separately from raw sensor accuracy. These metrics are not regulatory claims; they describe whether the node is useful for local situational awareness.
+
+| Metric | Value | Interpretation |
+|---|---:|---|
+| PM2.5 AQI-style category agreement | TODO | Agreement between sensor and reference category bins |
+| False high category events | TODO | Conservative but potentially disruptive alerts |
+| False low category events | TODO | Missed or understated exposure concern |
+| Alert-threshold crossings | TODO | Number of local operational threshold events |
+| Alert latency | TODO | Delay from threshold crossing to recorded or transmitted alert |
+| Offline logging recovery | TODO | Whether data survive network or power interruption |
+| Maintenance time | TODO | Practical burden for installation staff |
+
+### 5.5 Failure modes
 
 Failure modes should be coded by type:
 
@@ -293,6 +322,9 @@ The lab should use a weighted decision framework when choosing future box design
 | Thermal behavior | Error versus sun/wind/enclosure temperature | Less heat-induced bias |
 | Maintainability | Time to replace sensor/battery | Faster repair with fewer fragile steps |
 | Manufacturability | Print/build time, cost, repeatability | Faster, cheaper, more repeatable builds |
+| Installation utility | AQI-style category agreement, alert latency, maintenance log completeness | Better local awareness without overclaiming regulatory accuracy |
+| Ruggedness | Rain, solar, humidity, dust, handling, and brownout stress results | Fewer failures under outdoor installation conditions |
+| Auditability | Sensor IDs, calibration version, site metadata, deployment log | Easier review by sponsors, operators, and future lab members |
 
 For the next prototype, a strong default architecture is a two-zone design:
 
@@ -300,6 +332,8 @@ For the next prototype, a strong default architecture is a two-zone design:
 2. a ventilated external sensing region or radiation shield that isolates temperature/RH and other ambient sensors from electronics heat while blocking direct solar radiation and rain.
 
 The first material set to compare should be the current enclosure material against at least one more weatherable and reflective option, such as white ASA or white PETG, depending on the lab's printer capability. Dark materials should be avoided for parts near ambient-temperature sensors unless they are painted or shielded from solar radiation.
+
+For the military installation extension, the next prototype should also include field-service features: a replaceable sensor cartridge, insect screen access, local data export, a visible box ID, recorded calibration version, and a deployment log that links maintenance events to data gaps. These features matter because a rugged box that cannot be audited or serviced consistently is not operationally useful.
 
 ## 8. Conclusion
 

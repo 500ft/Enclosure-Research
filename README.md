@@ -14,6 +14,12 @@ This repo has been reframed from an enclosure-only study into a full deployed se
 - enclosure material, geometry, airflow, sealing, and weather exposure
 - a decision framework for future lab sensor-box designs
 
+## Military installation extension
+
+The `military-application-implementation` branch adds a defense-relevant extension for rugged, low-cost, validated environmental sensing hardware. The recommended framing is a dual-use, non-regulatory sensing node for smoke, particulate matter, heat, humidity, and base air-quality awareness at military installations, training ranges, battery/storage areas, and emergency-response sites.
+
+This extension should not claim regulatory-grade monitoring, fire detection, CBRN detection, or formal military qualification unless those claims are supported by specific certification and test evidence.
+
 ## Files
 
 - `paper/manuscript_v1.md` - working manuscript V1.0
@@ -25,6 +31,11 @@ This repo has been reframed from an enclosure-only study into a full deployed se
 - `templates/baseline_system_description.md` - lab box inventory template
 - `templates/deployment_log.csv` - field deployment log template
 - `templates/calibration_metrics.md` - metric definitions and reporting table
+- `templates/installation_deployment_plan.md` - defense-relevant site planning template
+- `templates/installation_deployment_log.csv` - installation-style event and maintenance log
+- `templates/ruggedization_test_matrix.md` - practical outdoor ruggedization test checklist
+- `military_applications/research_brief.md` - source-backed defense use-case research brief
+- `military_applications/validation_matrix.md` - validation criteria for installation awareness
 - `analysis/compute_metrics.py` - helper script for first-pass accuracy, uptime, and completeness metrics
 - `deliverables/PI_Literature_Synthesis_Outdoor_Sensor_Box.pdf` - PI-ready synthesis of all 19 literature sources
 - `deliverables/PI_Literature_Synthesis_Outdoor_Sensor_Box.docx` - editable version of the PI literature synthesis

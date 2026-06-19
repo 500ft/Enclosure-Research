@@ -32,6 +32,7 @@ class Metrics:
     rmse: float
     correlation: float
     drift_per_day: float
+    category_agreement: float | None = None
 
 
 def parse_timestamp(value: str) -> datetime:
@@ -96,6 +97,7 @@ def read_rows(csv_path: str, sensor_col: str, reference_col: str) -> list[tuple[
 def compute_metrics(
     rows: list[tuple[datetime, float, float]],
     expected_interval_minutes: float | None,
+    category_breakpoints: list[float] | None = None,
 ) -> Metrics:
     residuals = [sensor - reference for _, sensor, reference in rows]
     sensor_values = [sensor for _, sensor, _ in rows]
@@ -117,6 +119,14 @@ def compute_metrics(
         expected_count = int(math.floor(duration_minutes / expected_interval_minutes)) + 1
         completeness = float(count / expected_count) if expected_count else None
 
+    category_agreement = None
+    if category_breakpoints:
+        matches = sum(
+            category_index(sensor, category_breakpoints) == category_index(reference, category_breakpoints)
+            for _, sensor, reference in rows
+        )
+        category_agreement = matches / count
+
     return Metrics(
         count=count,
         expected_count=expected_count,
@@ -126,7 +136,15 @@ def compute_metrics(
         rmse=rmse,
         correlation=correlation,
         drift_per_day=drift_per_day,
+        category_agreement=category_agreement,
     )
+
+
+def category_index(value: float, breakpoints: list[float]) -> int:
+    for index, breakpoint in enumerate(breakpoints):
+        if value <= breakpoint:
+            return index
+    return len(breakpoints)
 
 
 def main() -> None:
@@ -135,12 +153,32 @@ def main() -> None:
     parser.add_argument("--sensor", required=True)
     parser.add_argument("--reference", required=True)
     parser.add_argument("--expected-interval-minutes", type=float)
+    parser.add_argument(
+        "--category-breakpoints",
+        help=(
+            "Comma-separated upper bounds for category agreement, e.g. "
+            "9,35.4,55.4,125.4,225.4 for PM2.5 AQI-style categories."
+        ),
+    )
     args = parser.parse_args()
 
     rows = read_rows(args.csv_path, sensor_col=args.sensor, reference_col=args.reference)
     if not rows:
         raise SystemExit("No valid rows found.")
-    metrics = compute_metrics(rows, expected_interval_minutes=args.expected_interval_minutes)
+    category_breakpoints = None
+    if args.category_breakpoints:
+        category_breakpoints = [
+            value
+            for value in (parse_float(part.strip()) for part in args.category_breakpoints.split(","))
+            if value is not None
+        ]
+        if not category_breakpoints:
+            raise SystemExit("No valid category breakpoints found.")
+    metrics = compute_metrics(
+        rows,
+        expected_interval_minutes=args.expected_interval_minutes,
+        category_breakpoints=category_breakpoints,
+    )
 
     for key, value in metrics.__dict__.items():
         if isinstance(value, float):

@@ -1,0 +1,8 @@
+timestamp,event_type,deployment_id,box_id,site_id,operational_context,action,observed_problem,pm25,pm10,temperature,rh,battery_voltage,data_completeness,alert_triggered,maintenance_minutes,person,notes
+2026-06-01T00:00:00Z,start,DEP-001,BOX-001,SITE-001,wildfire_smoke,"Started installation-style deployment",TODO,TODO,TODO,TODO,TODO,TODO,TODO,no,0,TODO,TODO
+2026-06-01T00:00:00Z,inspection,DEP-001,BOX-001,SITE-001,wildfire_smoke,"Visual inspection",TODO,TODO,TODO,TODO,TODO,TODO,TODO,no,0,TODO,TODO
+2026-06-01T00:00:00Z,alert,DEP-001,BOX-001,SITE-001,wildfire_smoke,"Threshold crossing observed",TODO,TODO,TODO,TODO,TODO,TODO,TODO,yes,0,TODO,TODO
+2026-06-01T00:00:00Z,maintenance,DEP-001,BOX-001,SITE-001,wildfire_smoke,"Maintenance intervention",TODO,TODO,TODO,TODO,TODO,TODO,TODO,no,TODO,TODO,TODO
+2026-06-01T00:00:00Z,failure,DEP-001,BOX-001,SITE-001,wildfire_smoke,"Failure observed",TODO,TODO,TODO,TODO,TODO,TODO,TODO,no,TODO,TODO,TODO
+2026-06-01T00:00:00Z,end,DEP-001,BOX-001,SITE-001,wildfire_smoke,"Ended deployment",TODO,TODO,TODO,TODO,TODO,TODO,TODO,no,0,TODO,TODO
+
