@@ -14,6 +14,12 @@ This repo has been reframed from an enclosure-only study into a full deployed se
 - enclosure material, geometry, airflow, sealing, and weather exposure
 - a decision framework for future lab sensor-box designs
 
+## CAD & FEA Design/Analysis Workstream
+
+The author can build parametric CAD and run finite-element analysis (thermal, fluid, and structural), so the enclosure design choices in this study are intended to be *analyzed*, not only described. The current draft synthesizes how material, geometry, airflow, and sealing affect a deployed sensor box; this workstream turns those qualitative lessons into modeled comparisons. Concretely, it covers parametric models of the baseline box and the candidate radiation-shield variants, steady-state thermal / conjugate-heat-transfer estimates of solar self-heating bias on temperature, relative humidity, and gas readings, natural-convection venting checks for the passive shield, and structural / modal analysis for the rugged-installation extension.
+
+These analyses feed the paper's decision framework for future lab sensor-box designs: each one maps to a specific paper claim or a design-framework recommendation, so a future design choice can cite a modeled tradeoff rather than only prior-literature intuition. All thermal and structural numbers produced here are simulation outputs and are treated as predictions pending lab data and co-location measurements; the workstream does not claim regulatory-grade or certified performance. The full plan, deliverables, and validation hooks are in `docs/cad_fea_plan.md`.
+
 ## Military installation extension
 
 The `military-application-implementation` branch adds a defense-relevant extension for rugged, low-cost, validated environmental sensing hardware. The recommended framing is a dual-use, non-regulatory sensing node for smoke, particulate matter, heat, humidity, and base air-quality awareness at military installations, training ranges, battery/storage areas, and emergency-response sites.
@@ -37,6 +43,7 @@ This extension should not claim regulatory-grade monitoring, fire detection, CBR
 - `military_applications/research_brief.md` - source-backed defense use-case research brief
 - `military_applications/validation_matrix.md` - validation criteria for installation awareness
 - `analysis/compute_metrics.py` - helper script for first-pass accuracy, uptime, and completeness metrics
+- `docs/cad_fea_plan.md` - planned CAD and FEA workstream (variants, thermal/venting/structural/sealing analyses, claim mapping)
 - `deliverables/PI_Literature_Synthesis_Outdoor_Sensor_Box.pdf` - PI-ready synthesis of all 19 literature sources
 - `deliverables/PI_Literature_Synthesis_Outdoor_Sensor_Box.docx` - editable version of the PI literature synthesis
 
