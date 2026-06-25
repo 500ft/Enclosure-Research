@@ -1,0 +1,164 @@
+# Thermal self-heating bias: analytical baseline results
+
+**SIMULATION OUTPUT -- pending lab and co-location data. Not a measurement, not a
+certified or regulatory-grade result.** Every value below is a first-order
+analytical prediction produced by `analysis/thermal_bias.py`. This lumped
+steady-state result is the **analytical baseline that the later
+conjugate-heat-transfer (CHT) FEA (`docs/cad_fea_plan.md` Section 3.2) will
+refine**; it is reported as a prediction, consistent with the honesty
+constraints in `README.md` and the CAD/FEA plan.
+
+Regenerate with:
+
+```bash
+python3 analysis/thermal_bias.py
+# figure -> analysis/figures/thermal_bias.png
+```
+
+## 1. What this models and why FEA is not needed for it
+
+The paper's central enclosure error mechanism is **radiative self-heating**:
+under solar load the enclosure/shield surface runs hot, the air the sensor sees
+runs hot, and temperature / relative-humidity (and gas) readings are biased high
+in temperature and low in RH. This mechanism is *first order* and does **not**
+require FEA to bound. For each variant we solve the steady-state lumped energy
+balance on the sensor-coupled surface:
+
+```
+alpha * solar_factor * G * A_proj  +  Q_internal
+    =  h_eff * A_conv * (T_s - T_local)
+       +  eps * sigma * A_conv * [ f_sky*(T_s^4 - T_sky^4) + (1-f_sky)*(T_s^4 - T_local^4) ]
+```
+
+and report the sensor temperature rise above **true** ambient, `dT = T_s - T_air`,
+then map `dT` to the reported RH error (warm air at fixed water-vapor content
+reads low RH). The CHT FEA later refines this by resolving the internal
+convection field and giving a spatial sensor temperature (see
+`analysis/cad_fea/`); it is not needed to establish the bias ranking or
+magnitude.
+
+## 2. Bias-vs-variant table (headline deliverable)
+
+Ambient case: `T_air = 30 degC`, `RH_true = 50 %`, clear-sky `T_sky = 10 degC`
+(20 K depression). `dT` in degC (sensor rise above true ambient); `RH_err` in
+%RH (reported minus true; **negative = reads dry**).
+
+| G [W/m^2] | wind [m/s] | V0 dT | V0 RH_err | V1 dT | V1 RH_err | V2 dT | V2 RH_err |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 800  | 0.0 | 17.6 | -30.7 | 3.0 | -7.7 | 1.1 | -3.0 |
+| 800  | 0.5 | 15.0 | -28.0 | 2.4 | -6.4 | 1.1 | -3.0 |
+| 800  | 1.0 | 13.1 | -25.6 | 2.0 | -5.4 | 1.1 | -3.0 |
+| 800  | 2.0 | 10.4 | -21.9 | 1.5 | -4.0 | 1.1 | -3.0 |
+| 800  | 5.0 |  6.4 | -15.1 | 0.7 | -2.0 | 1.1 | -3.0 |
+| 1000 | 0.0 | 22.7 | -35.0 | 3.7 | -9.4 | 1.3 | -3.7 |
+| 1000 | 0.5 | 19.4 | -32.4 | 3.0 | -7.8 | 1.3 | -3.7 |
+| 1000 | 1.0 | 17.0 | -30.0 | 2.5 | -6.6 | 1.3 | -3.7 |
+| 1000 | 2.0 | 13.5 | -26.1 | 1.8 | -4.9 | 1.3 | -3.7 |
+| 1000 | 5.0 |  8.3 | -18.6 | 0.9 | -2.5 | 1.3 | -3.7 |
+
+**Range across wind 0-5 m/s at G = 1000 W/m^2 (worst-case solar):**
+
+| Variant | dT calm -> windy [degC] | RH_err [%RH] | Dominant contributor |
+|---|---|---|---|
+| V0 Baseline closed box | **22.7 -> 8.3** | -35.0 -> -18.6 | Solar on dark wall + self-heating; ventilation-limited |
+| V1 Passive multi-plate shield | **3.7 -> 0.9** | -9.4 -> -2.5 | Residual plate-to-air pre-heat; flushes with wind |
+| V2 Actively aspirated reference | **~1.3 (flat)** | ~-3.7 | Forced convection dominates; wind-independent |
+
+Magnitudes are physically sanity-checked: a closed box in full sun running
+~10-25 degC hot, a good passive shield cutting that to ~1-4 degC, and aspiration
+to ~1 degC, are the documented bands. Note the V1 and V2 curves cross near
+~3 m/s: a well-ventilated passive shield can match or beat forced aspiration once
+natural convection is strong, which is exactly the literature finding that
+aspiration helps **mainly at low wind**.
+
+Figure: `analysis/figures/thermal_bias.png` (left: dT vs wind; right: RH_err vs
+wind; solid = 1000 W/m^2, dashed = 800 W/m^2).
+
+## 3. Assumptions block (every input, with status)
+
+Status: `bounded` = bounded engineering assumption to be measured/refined;
+`geometry/TODO-from-lab` = placeholder pending `templates/baseline_system_description.md`;
+`physics` = standard correlation/constant; `swept` = varied in the sweep.
+
+| Input | Value | Units | Status |
+|---|---|---|---|
+| Clear-sky solar G | 800-1000 | W/m^2 | swept |
+| Ambient air T_air | 30 | degC | bounded |
+| True ambient RH | 50 | % | bounded |
+| Clear-sky depression (T_air - T_sky) | 20 | K | bounded |
+| alpha, baseline box surface (dark) | 0.90 | - | bounded |
+| alpha, light/white shield surface | 0.30 | - | bounded |
+| Long-wave emissivity eps | 0.90 | - | bounded |
+| f_sky, baseline (area seeing cold sky) | 0.50 | - | bounded |
+| f_sky, shield (sensor sees cold sky) | 0.05 | - | bounded |
+| A_proj baseline / shield | 0.030 / 0.012 | m^2 | geometry/TODO-from-lab |
+| A_conv baseline / shield element | 0.090 / 0.020 | m^2 | geometry/TODO-from-lab |
+| shield_solar_factor (flux reaching sensor) | 0.18 | - | bounded |
+| Internal self-heat: single-zone / two-zone | 0.8 / 0.1 | W | bounded/TODO-from-lab |
+| h_ext = 5.0 + 4.0*wind | -- | W/m^2K | physics |
+| shield natural-convection boost | 1.4 | - | bounded |
+| shield air pre-heat (calm) | 1.2 | K | bounded |
+| pre-heat wind half-life | 1.5 | m/s | bounded |
+| h_fan (V2 forced convection) | 25 | W/m^2K | bounded |
+
+Optical properties (alpha, eps) are color/finish dependent and are **not** on
+filament datasheets; they are model inputs to be measured or bounded, not
+assumed (consistent with `paper/manuscript_v1.md` 2.3 and the CAD/FEA plan).
+
+## 4. Sensitivity (which uncertain input dominates)
+
+One-at-a-time perturbations at G = 1000 W/m^2, wind = 0.5 m/s (`dT` in degC):
+
+| Perturbation | V0 dT | V1 dT |
+|---|---:|---:|
+| baseline | 19.4 | 3.0 |
+| V0 surface painted white (alpha 0.90 -> 0.30) | **4.5** | - |
+| V0 internal load doubled (0.8 -> 1.6 W) | 20.1 | - |
+| V0 low emissivity (0.90 -> 0.50) | **26.4** | - |
+| V1 shading worse (solar_factor 0.18 -> 0.30) | - | 4.4 |
+| V1 no convection boost (1.4 -> 1.0) | - | 3.4 |
+| V1 plate air pre-heat doubled (1.2 -> 2.4 K calm) | - | 3.9 |
+
+Takeaways: V0 bias is driven hardest by **surface optical properties** -- solar
+absorptance and IR emissivity -- not by internal load. Painting the baseline
+white (alpha 0.90 -> 0.30) alone cuts V0 from ~19 to ~4.5 degC. V1 is robust:
+none of the shield-detail uncertainties move it more than ~1.5 degC, so the
+shield's benefit does not hinge on a fragile assumption.
+
+## 5. RH-error mapping
+
+The reported RH is computed by holding the **absolute** water-vapor content at
+the ambient partial pressure and raising the sensor temperature to `T_s`; RH is
+then the fixed actual vapor pressure over the saturation pressure at the warmer
+sensor temperature (Magnus/Tetens `e_s`). A warm sensor therefore reports a
+**low** RH. This converts each thermal `dT` into the measurable RH bias the paper
+cares about (table 2): e.g. V0's ~19 degC rise reads about **-32 %RH**, while
+V1's ~3 degC rise reads about **-8 %RH** at low wind.
+
+## 6. Mapping each number to a paper claim / framework recommendation
+
+| Result | Paper claim / framework recommendation it supports |
+|---|---|
+| V0 dT = 8-23 degC, RH_err down to -35 %RH | Core claim: the baseline enclosure adds a large solar self-heating warm/dry bias -- "the enclosure reads hot" -- so raw readings need this enclosure-bias caveat. |
+| V1 dT = 0.9-3.7 degC vs V0 8-23 degC | Core claim: a passive multi-plate shield substantially reduces solar-radiation error relative to the baseline (Botero-Valencia et al.; Tarara & Hoheisel). Magnitude of the win is quantified, not asserted. |
+| V0 and V1 dT both fall steeply with wind; V1/V2 cross ~3 m/s | Claim: the error is **ventilation-limited**, and aspiration helps mainly at low wind (Theisen et al.; Deford et al.). Feeds the venting analysis (`docs/cad_fea_plan.md` 3.3). |
+| V2 ~1.3 degC, ~wind-independent | Justifies the optional actively aspirated **reference** as a low-wind upper-bound benchmark, only if V0 shows strong low-wind bias (which it does). |
+| Sensitivity: alpha 0.90 -> 0.30 cuts V0 to ~4.5 degC | Framework rec.: prefer **high-reflectance, low-absorptance light-colored surfaces**; record surface optical properties as a design parameter, not just a photo. |
+| Two-zone internal load 0.8 -> 0.1 W (V0 vs V1) | Framework rec.: **separate ambient sensors from internal heat sources** (two-zone layout); self-heating is a second-order but real contributor in the single-zone baseline. |
+| RH_err column (-2 to -35 %RH) | Shows the thermal bias maps to a **measurable RH error**, the sensor metric the calibration/accuracy sections report against the reference instrument. |
+
+## 7. Validation hook (how this gets checked)
+
+The predicted V0 dT range is to be compared against the **solar-heat-soak** test
+(`templates/ruggedization_test_matrix.md`, internal-temp-rise and sensor-bias
+rows) and against **co-location bias** vs. the reference instrument. Agreement,
+or the gap, will be reported. No value here is promoted from "prediction" to
+"finding" until that comparison is done. The gas-sensor knock-on is **not**
+quantified here: gas cross-sensitivity to T/RH is sensor-specific and is flagged
+as indicative pending sensor datasheets and co-location, per the CAD/FEA plan.
+
+---
+
+*This lumped analytical result is the baseline; the conjugate-heat-transfer FEA
+in `docs/cad_fea_plan.md` Section 3.2 (`analysis/cad_fea/`) will refine it. All
+numbers are SIMULATION, pending lab co-location data.*
