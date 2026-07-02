@@ -14,9 +14,15 @@ Optimize for that.
 This work is lab research, not a personal project, so the first action is a
 conversation with the PI to settle:
 
-- [ ] **Repository visibility and IP** — this repo is currently public; confirm
-      whether NYU/lab policy and any publication embargo permit that, and switch
-      to private if there is any doubt.
+- [x] **Repository visibility and IP** — **EXECUTED 2026-07-02: repo switched to
+      PRIVATE.** This roadmap's own rule was "switch to private if there is any
+      doubt"; the repo sat public for a week past the gate with PI deliverables
+      and an unpublished manuscript in it, which is exactly the doubt case. The
+      asymmetry decides it: re-publicizing after PI approval costs one click,
+      while a PI discovering their unpublished study public costs the
+      relationship this project exists to build. Re-open visibility only with
+      the PI's explicit OK. (The PI conversation itself — authorship, license,
+      data timeline — is still owed.)
 - [ ] **Authorship and licensing** — confirm intended authorship order and what
       license (if any) the PI wants before adding any license file.
 - [ ] **Data timeline** — confirm whether the lab measurement data (sensor
