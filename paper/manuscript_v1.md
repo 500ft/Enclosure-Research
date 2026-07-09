@@ -6,7 +6,7 @@
 
 ## Abstract
 
-Low-cost outdoor sensor boxes can increase the spatial and temporal resolution of environmental measurements, but their usefulness depends on more than the nominal accuracy of individual sensors. Once sensors are integrated into an enclosure, their measurements can be affected by calibration error, solar heating, internal electronics heat, airflow restriction, water ingress, dust, sensor aging, power limitations, firmware reliability, and data loss. This paper evaluates the lab's existing low-cost outdoor multi-sensor box as a deployed system rather than as a single enclosure component. The study measures raw sensor accuracy against reference instruments, quantifies improvement after simple calibration, tracks autonomy and data completeness during field operation, and identifies which design factors most limit performance. The expected output is a practical decision framework that helps the lab choose future materials, geometries, sensor layouts, and maintenance schedules based on accuracy, reliability, autonomy, manufacturability, and weather resistance.
+Low-cost outdoor sensor boxes can increase the spatial and temporal resolution of environmental measurements, but their usefulness depends on more than the nominal accuracy of individual sensors. Once sensors are integrated into an enclosure, their measurements can be affected by calibration error, solar heating, internal electronics heat, airflow restriction, water ingress, dust, sensor aging, power limitations, firmware reliability, and data loss. This paper evaluates the lab's existing low-cost outdoor multi-sensor box as a deployed system rather than as a single enclosure component. The study measures raw sensor accuracy against reference instruments with documented uncertainty, quantifies improvement after simple calibration, tracks autonomy and data completeness during field operation, and identifies which design factors most limit performance, following the collocation durations and evaluation metrics recommended by published air-sensor performance protocols. A first-order thermal model predicts the solar self-heating bias of the enclosure variants in advance, and the co-location data are used to test those predictions. The expected output is a practical, evidence-weighted decision framework — with criterion weights set by the measured dominant error and failure sources rather than assumed in advance — that helps the lab choose future materials, geometries, sensor layouts, and maintenance schedules based on accuracy, reliability, autonomy, manufacturability, and weather resistance.
 
 ## 1. Introduction
 
@@ -18,7 +18,7 @@ The working research question is:
 
 > Can the lab's low-cost sensor box collect accurate, reliable outdoor data for a useful period of time without constant maintenance, and what factors most affect that performance?
 
-This question expands the earlier enclosure-only direction. The previous scope emphasized passive 3D-printed radiation shields, temperature and relative-humidity bias, response time, and short-term weathering. Those issues remain relevant, but they are now treated as part of a larger sensor-box performance problem. The main contribution of this paper is therefore not a universal sensor-box design. It is a structured evaluation of the lab's current box, the calibration improvement achievable from field data, and the design criteria that should guide future versions.
+This question expands the earlier enclosure-only direction. The previous scope emphasized passive 3D-printed radiation shields, temperature and relative-humidity bias, response time, and short-term weathering. Those issues remain relevant, but they are now treated as part of a larger sensor-box performance problem. The main contribution of this paper is therefore not a universal sensor-box design. It is a structured, protocol-anchored evaluation of the lab's current box, the calibration improvement achievable from field data, a falsifiable first-order prediction of the enclosure's thermal bias that the field data will test, and the design criteria that should guide future versions.
 
 ## 2. Background and Literature Review
 
@@ -274,10 +274,12 @@ Failure modes should be coded by type:
 The discussion should identify the dominant limiting factor in the current box. Possible interpretations are:
 
 - If calibration sharply reduces error and autonomy is acceptable, the current hardware may be usable with a defined calibration workflow.
-- If error remains strongly correlated with solar radiation, wind speed, or enclosure temperature after calibration, the enclosure geometry or material is likely limiting accuracy.
+- If the enclosure is limiting accuracy, it will show up in one of two ways rather than as a simple residual correlation: either the calibration achieves its improvement only through large solar, wind, or enclosure-temperature coefficients — meaning the model is compensating for enclosure physics rather than sensor error — or weather-correlated error reappears in the time-separated test period. Note that when solar radiation is included as a calibration covariate (Section 4.4), in-sample residuals will be uncorrelated with solar by construction, so this diagnosis must use held-out data and coefficient magnitudes, not training residuals.
 - If the box stops early or misses many samples, power or firmware reliability is more important than sensor accuracy.
 - If sensors fail physically, corrode, or drift rapidly, weather protection and replacement schedule become the design priority.
 - If maintenance is frequent or difficult, future design should prioritize modularity, connector protection, and easier field access.
+
+A related distinction the discussion must make explicit is *calibrated-away* versus *designed-away* error. A regression that uses solar radiation or enclosure temperature as a covariate can compensate for an enclosure-driven bias without removing its physical cause; that correction is tied to the deployment conditions under which it was trained, and the calibration-transferability literature cautions that such corrections may not transfer across sites, seasons, or hardware revisions [@desouza2022; @diez2024]. An enclosure fix (shielding, ventilation, surface finish) removes the error for every subsequent deployment. When both routes reach similar test-period error, the design fix should be preferred for any box intended for reuse.
 
 The paper should avoid claiming that one material or geometry is universally best. Instead, it should report which component most affects the lab's measurement goal. A temperature and relative-humidity box may need airflow and radiation shielding above all else. A particulate-matter box may need inlet geometry, fan reliability, and humidity correction. A multi-sensor box may need separation between a ventilated sensor region and a sealed electronics/power region.
 
@@ -292,7 +294,7 @@ The lab should use a weighted decision framework when choosing future box design
 | Autonomy | Days before intervention | Longer runtime without field visit |
 | Reliability | Uptime and data completeness | Fewer missing samples and dropouts |
 | Weather resistance | Physical inspection and failure events | Less UV, rain, condensation, and dust damage |
-| Thermal behavior | Error versus sun/wind/enclosure temperature | Less heat-induced bias |
+| Thermal behavior | Error versus sun/wind/enclosure temperature, compared against the modeled self-heating prediction (`analysis/thermal_bias_results.md`) | Less heat-induced bias; measured bias consistent with or below the variant's predicted band |
 | Maintainability | Time to replace sensor/battery | Faster repair with fewer fragile steps |
 | Manufacturability | Print/build time, cost, repeatability | Faster, cheaper, more repeatable builds |
 
