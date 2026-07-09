@@ -1,4 +1,4 @@
-# Grimsley et al. (2022): EnviSense Low-Power Hydrological Nodes
+# Grimsley et al. (2021): EnviSense Low-Power Hydrological Nodes
 
 **Source:** https://doi.org/10.1145/3477085.3478988  
 **Evidence boundary:** Multi-node field deployment emphasizing autonomy, communication, and maintainability. Exact IP67 enclosure material is not reported.

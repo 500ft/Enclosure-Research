@@ -64,12 +64,20 @@ Ambient case: `T_air = 30 degC`, `RH_true = 50 %`, clear-sky `T_sky = 10 degC`
 | V1 Passive multi-plate shield | **3.7 -> 0.9** | -9.4 -> -2.5 | Residual plate-to-air pre-heat; flushes with wind |
 | V2 Actively aspirated reference | **~1.3 (flat)** | ~-3.7 | Forced convection dominates; wind-independent |
 
-Magnitudes are physically sanity-checked: a closed box in full sun running
-~10-25 degC hot, a good passive shield cutting that to ~1-4 degC, and aspiration
-to ~1 degC, are the documented bands. Note the V1 and V2 curves cross near
-~3 m/s: a well-ventilated passive shield can match or beat forced aspiration once
-natural convection is strong, which is exactly the literature finding that
-aspiration helps **mainly at low wind**.
+**Bracketing against measured values in the source literature** (predictions vs.
+published *measurements*; all model values remain predictions):
+
+| Prediction | Measured bracket | Sources |
+|---|---|---|
+| V1 passive multi-plate, dT 0.9-3.7 degC | Good stacked-plate passive shields measure dT -0.7 to +2.2 degC full-sun (89% of daytime readings <= 1.5 degC); poorer passive geometries reach +5.4 degC (cones) and +7.4 degC (open-bottom tubes). A $3 Gill-style shield showed MAE 0.99 degC vs. a mechanically aspirated reference in the open, warm-biased at low wind. 3D-printed cone shields measured max daytime errors 0.3-1.5 degC vs. a Vantage Pro. | Tarara & Hoheisel 2007; Holden et al. 2013; Botero-Valencia et al. 2022 |
+| V2 aspirated, ~1.3 degC flat | Measured aspirated shields average < +/-0.5 degC vs. a passive Gill reference — the V2 prediction is conservative (high) by ~2x. | Tarara & Hoheisel 2007 |
+| Wind dependence (both V0/V1 fall steeply with wind) | Passive multi-plate 3D-PAWS temperature RMSE fell 1.22 -> 1.08 degC above 1 m/s wind and approached the 0.8 degC sensor floor above ~5 m/s vs. an actively aspirated Mesonet reference. | Theisen et al. 2020 |
+| V0 closed box, dT 8.3-22.7 degC | **Not directly bracketed.** The source set contains no measured sealed-dark-box-in-sun bias; the nearest measured anchors are the worst passive geometry (+7.4 degC) and a fully exposed sensor (max +4.1 to +6.0 degC daytime). V0 exceeding all of these is *expected* (closed dark enclosure + internal dissipation, no ventilation) but is a model claim only until the solar-heat-soak test (Section 7) measures it. | Tarara & Hoheisel 2007; Botero-Valencia et al. 2022 |
+
+Note the V1 and V2 curves cross near ~3 m/s: a well-ventilated passive shield can
+match or beat forced aspiration once natural convection is strong, which is exactly
+the literature finding that aspiration helps **mainly at low wind** (Theisen et al.;
+Deford et al.).
 
 Figure: `analysis/figures/thermal_bias.png` (left: dT vs wind; right: RH_err vs
 wind; solid = 1000 W/m^2, dashed = 800 W/m^2).

@@ -190,7 +190,7 @@ This document separates information explicitly reported by each paper from infor
 - One-minute low-cost measurements averaged to match hourly reference data
 - Linear regression, multiple linear regression, and machine-learning corrections evaluated using temperature and RH
 
-### Grimsley et al. (2022): EnviSense Low-Power Hydrological Nodes
+### Grimsley et al. (2021): EnviSense Low-Power Hydrological Nodes
 
 **Sensors**
 
@@ -336,7 +336,7 @@ The key geometry variables to record or control are:
 - Clements et al. (2017): https://doi.org/10.3390/s17112478
 - Giordano et al. (2021): https://doi.org/10.1016/j.jaerosci.2021.105833
 - Vajs et al. (2021): https://doi.org/10.3390/s21103338
-- Grimsley et al. (2022): https://doi.org/10.1145/3477085.3478988
+- Grimsley et al. (2021): https://doi.org/10.1145/3477085.3478988
 - Deployment and Evaluation of AirSensEUR Systems (2023): https://doi.org/10.3390/atmos14030540
 - Tarara and Hoheisel (2007): https://doi.org/10.21273/HORTSCI.42.6.1372
 - Holden et al. (2013): https://doi.org/10.1016/j.agrformet.2013.06.011

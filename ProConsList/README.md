@@ -31,7 +31,7 @@ When adding a paper:
 | `clements2017` | Low-cost monitoring workshop summary | `clements2017.md` |
 | `giordano2021` | Low-cost PM calibration review | `giordano2021.md` |
 | `vajs2021` | AQ10x calibration study | `vajs2021.md` |
-| `grimsley2022` | EnviSense low-power nodes | `grimsley2022.md` |
+| `grimsley2021` | EnviSense low-power nodes | `grimsley2021.md` |
 | `airsenseur2023` | AirSensEUR network deployment | `airsenseur2023.md` |
 | `tarara2007` | Low-cost passive shielding comparison | `tarara2007.md` |
 | `holden2013` | Inexpensive folded radiation shield | `holden2013.md` |
@@ -43,5 +43,9 @@ When adding a paper:
 | `deford2025` | 3D-printed aspirated shield | `deford2025.md` |
 | `winter2025` | Three-year electrochemical-sensor performance | `winter2025.md` |
 | `jin2026` | High-accuracy naturally ventilated shield | `jin2026.md` |
+| `duvall2021` | EPA PM2.5 sensor performance protocols (EPA/600/R-20/280) | `duvall2021.md` |
+| `wmo2023no8` | WMO-No. 8 instruments and observation methods guide | `wmo2023no8.md` |
+| `astm2022d8406` | ASTM D8406-22 outdoor sensor evaluation practice | `astm2022d8406.md` |
+| `cen2021ts17660` | CEN/TS 17660-1 sensor-system performance classification | `cen2021ts17660.md` |
 
 The cross-paper analysis from the initial literature review is preserved in `consolidated_selections.md`.
