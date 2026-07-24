@@ -6,7 +6,7 @@
 
 ## Abstract
 
-Low-cost outdoor sensor boxes can increase the spatial and temporal resolution of environmental measurements, but their usefulness depends on more than the nominal accuracy of individual sensors. Once sensors are integrated into an enclosure, their measurements can be affected by calibration error, solar heating, internal electronics heat, airflow restriction, water ingress, dust, sensor aging, power limitations, firmware reliability, and data loss. This paper evaluates the lab's existing low-cost outdoor multi-sensor box as a deployed system rather than as a single enclosure component. The study measures raw sensor accuracy against reference instruments with documented uncertainty, quantifies improvement after simple calibration, tracks autonomy and data completeness during field operation, and identifies which design factors most limit performance, following the collocation durations and evaluation metrics recommended by published air-sensor performance protocols. A first-order thermal model predicts the solar self-heating bias of the enclosure variants in advance, and the co-location data are used to test those predictions. The expected output is a practical, evidence-weighted decision framework — with criterion weights set by the measured dominant error and failure sources rather than assumed in advance — that helps the lab choose future materials, geometries, sensor layouts, and maintenance schedules based on accuracy, reliability, autonomy, manufacturability, and weather resistance.
+Low-cost outdoor sensor boxes can increase the spatial and temporal resolution of environmental measurements, but their usefulness depends on more than the nominal accuracy of individual sensors. Once sensors are integrated into an enclosure, their measurements can be affected by calibration error, solar heating, internal electronics heat, airflow restriction, water ingress, dust, sensor aging, power limitations, firmware reliability, and data loss. This paper evaluates the lab's existing low-cost outdoor multi-sensor box as a deployed system rather than as a single enclosure component. The study measures raw sensor accuracy against reference instruments with documented uncertainty, quantifies improvement after simple calibration, tracks autonomy and data completeness during field operation, and identifies which design factors most limit performance, following the collocation durations and evaluation metrics recommended by published air-sensor performance protocols. A first-order thermal model predicts the solar self-heating bias of the enclosure variants in advance, and the co-location data are used to test those predictions. Preliminary reliability results from the box's first deployment logs are now included: across a provisional 22-day unattended outdoor window the box recorded zero brownout resets with 95.7% upload success and 91.4% data completeness, while all observed power failures — in two distinct modes — were confined to indoor bench phases; accuracy and calibration results await reference co-location. The expected output is a practical, evidence-weighted decision framework — with criterion weights set by the measured dominant error and failure sources rather than assumed in advance — that helps the lab choose future materials, geometries, sensor layouts, and maintenance schedules based on accuracy, reliability, autonomy, manufacturability, and weather resistance.
 
 ## 1. Introduction
 
@@ -116,26 +116,28 @@ On geometry, the study will test, beyond the literature's single-layer stacked-p
 
 Autonomy is the period during which the box operates without physical intervention. This is not only battery life. A box loses autonomy when data are missing, sensors drop out, storage fills, clocks drift, wireless upload fails, connectors corrode, firmware hangs, or the enclosure requires repair. EnviSense and similar low-power environmental sensing work demonstrates that field reliability depends on deployment planning, remote device management, and system co-design with domain users, not only the sensor bill of materials [@grimsley2021].
 
+This lesson long predates low-cost air sensing: the canonical large-scale field deployments of low-power sensor networks reported lifetime, node mortality, and data yield as primary results [@szewczyk2004], and their deployment-practice successors warned that a functioning system does not by itself guarantee meaningful data — failures arise across development, packaging, power, and on-site validation, and bench behavior does not predict field behavior [@barrenetxea2008]. In the air-quality domain specifically, long-term collocation studies now evaluate data completeness explicitly alongside accuracy [@feinberg2018].
+
 The expanded literature shows why autonomy must be measured from observed field behavior rather than estimated battery capacity alone. Eclipse reports expected sensor-hours as an operational reliability measure [@daepp2022]. Lazarescu documents how a theoretically long-lived low-power network still required intervention after thermal, mechanical, charging, and communication failures [@lazarescu2015]. The COAT Arctic comparison lost data from fan, logger, power, memory, mounting, and storm events [@garciaizquierdo2024], while Winter et al. found that mechanical and electrical failures could occur before meaningful electrochemical sensing-element degradation [@winter2025].
 
 For the lab's sensor box, autonomy should be reported with several metrics: runtime before physical intervention, uptime percentage, data completeness, number and type of maintenance events, number of power failures, number of sensor dropouts, and time before recalibration is needed. These metrics connect directly to the PI's question: how long can the box last without someone having to change it or fix it?
 
 ## 3. Sensor Box Description
 
-This section must document the current lab box before any modification. Table 1 is the required baseline inventory.
+This section documents the current lab box before any modification. Table 1 is the baseline inventory. Each value is labeled by evidence source: **[log]** = established by the deployment-log schema or data (Section 5.0), **[owner]** = supplied by the box owner from direct measurement, **[confirm]** = requires confirmation from the lab (open items are tracked in the provenance sheet accompanying the deployment-log audit).
 
-| Component | Current lab box value | Notes to collect |
-|---|---:|---|
-| Sensor models | TODO | Include manufacturer, exact part number, measurement variable, range, datasheet accuracy |
-| Microcontroller/logger | TODO | ESP32, Arduino, Raspberry Pi, Particle, custom PCB, etc. |
-| Power system | TODO | Battery chemistry/capacity, solar panel, regulator, sleep mode |
-| Enclosure material | TODO | PLA, ASA, PETG, ABS, commercial box, metal, etc. |
-| Enclosure geometry | TODO | Louvered, stacked plate, vented box, sealed box, aspirated shield |
-| Sensor placement | TODO | Inside main box, external probe, distance from electronics, orientation |
-| Logging rate | TODO | Seconds/minutes between samples |
-| Data storage/transmission | TODO | SD card, flash, Wi-Fi, LoRa, cellular, serial download |
-| Firmware behavior | TODO | Watchdog, retry logic, timestamp source, power saving |
-| Known failure problems | TODO | Water ingress, battery drain, missing data, corrosion, bad calibration |
+| Component | Current lab box value | Evidence / notes |
+|---|---|---|
+| Sensor models | T/RH sensor, optical particle counter (0.3 µm count + PM1/PM2.5/PM10 channels), NO2 and Ox electrochemical cells (working + auxiliary electrode channels) | [log] channel set; exact part numbers [confirm] |
+| Microcontroller/logger | ESP32-class MCU (dual-core reset codes, deep-sleep wake cycle, hardware brownout detector) | [log] ESP-IDF reset-reason vocabulary; board revision [confirm] |
+| Power system | Single-cell Li-ion (observed 3.31–4.17 V) with fuel gauge reporting SOC; battery-temperature channel unpopulated (−42 sentinel on all records); solar panel and regulator details | [log]; panel/regulator ratings [confirm] |
+| Enclosure material | 3D-printed ABS, 0.100 in (2.54 mm) nominal wall | [owner] |
+| Enclosure geometry | Vented box, 7.711 × 5.490 × 4.550 in exterior; bottom hex-pattern vent 12.04 in² (≈48% of footprint); full roof with 0.200 in vertical gap (nominal lateral outlet ≈4.02 in² if the gap is continuous — unverified); ≈2.83 L gross internal volume | [owner]; gap continuity and internal blockage [confirm] |
+| Sensor placement | Improvised layout (components positioned where they fit); gas sensors face downward toward the bottom vent | [owner]; exact coordinates undocumented — a documented limitation for any thermal analysis |
+| Logging rate | Observed median 6 min between records | [log]; configured cadence [confirm] |
+| Data storage/transmission | Cellular (LTE registration and signal-quality fields) with HTTP POST upload; per-record upload status logged | [log] |
+| Firmware behavior | Deep-sleep duty cycle; per-record reset-reason, boot counter, and stage markers; brownout detector active; environmental read is corrupted on brownout-reset records (humidity reads 0) | [log]; timestamp source and retry logic [confirm] |
+| Known failure problems | Brownout resets in two distinct modes (Section 5.4); upload failure coupled to power state, not signal quality; fuel-gauge thermistor unpopulated | [log] |
 
 The first field deployment should use the existing box as-is. This creates the baseline against which any enclosure, power, firmware, or calibration improvement can be compared.
 
@@ -221,9 +223,19 @@ Candidate materials and geometries should be classified before testing using pra
 
 ## 5. Results
 
-This V1.0 draft does not include measured lab results yet. The results section below is the intended reporting structure.
+This draft now includes preliminary field-reliability results (Sections 5.0, 5.3, 5.4) derived from two deployment logs of the existing lab box. Accuracy and calibration results (Sections 5.1, 5.2) remain pending: neither log contains a co-located reference stream, so no accuracy claim can be made until the reference co-location of Section 4.1 is performed.
+
+### 5.0 Data source and provisional status
+
+Two device logs were analyzed (Log A: 9,324 records, 2026-03-24 to 2026-06-04; Log B: 1,087 records, 2026-05-29 to 2026-06-04; timestamps logger-local, timezone unconfirmed). All statistics are regenerated by a single script (`analysis/analyze_deployment_logs.py`); the raw CSVs are held outside this repository pending a data-governance decision, and are identified in the script output by SHA-256 hash.
+
+Throughout, a *brownout record* is one whose reset reason is the hardware brownout detector, and an *operational record* is a normal deep-sleep wake with a valid environmental read. Supporting figures: `analysis/figures/deployment_temp_window.png` (deployment-window identification), `deployment_daily_brownout.png` (daily brownout fraction), `deployment_battv_outcome.png` (battery voltage by record outcome).
+
+The deployment timeline is inferred, not documented: the internal temperature signature indicates the box was outdoors only from Apr 20 to May 11 (daily minima drop from a pinned ~21 °C to 4–12 °C with 10–20 °C diurnal swings; all other phases, and all of Log B, sit near room temperature with small swings). This indoor/outdoor classification — and the identity of the two logs, which record contradictory device states during their overlap and therefore appear to be two units — is provisional pending confirmation by the lab. Results below that depend on it are marked accordingly.
 
 ### 5.1 Raw accuracy
+
+**Status: blocked on reference co-location (Section 4.1, phase 2).** The table below is the intended reporting structure.
 
 Report raw bias, MAE, RMSE, correlation, and drift for each sensor channel. Include a time-series plot showing the sensor and reference together, plus a residual plot showing error against time, temperature, humidity, solar exposure, and battery voltage.
 
@@ -236,7 +248,7 @@ Report raw bias, MAE, RMSE, correlation, and drift for each sensor channel. Incl
 
 ### 5.2 Calibrated accuracy
 
-Compare raw data against calibrated data. The key result is not only whether RMSE improves, but whether the calibration remains stable across weather conditions and time.
+**Status: blocked on reference co-location.** Compare raw data against calibrated data. The key result is not only whether RMSE improves, but whether the calibration remains stable across weather conditions and time.
 
 | Sensor variable | Raw RMSE | Linear RMSE | Multiple linear RMSE | Error reduction | Recommended model |
 |---|---:|---:|---:|---:|---|
@@ -245,29 +257,33 @@ Compare raw data against calibrated data. The key result is not only whether RMS
 | Pressure | TODO | TODO | TODO | TODO | TODO |
 | PM2.5 / gas / light / other | TODO | TODO | TODO | TODO | TODO |
 
-### 5.3 Autonomy and data completeness
+### 5.3 Autonomy and data completeness (preliminary, field window)
 
-Report runtime and data loss as engineering results, not as secondary notes.
+Runtime and data loss are reported as engineering results, not secondary notes. Values are for the provisional field-deployment window of Log A (Apr 20 – May 11); the bracketing indoor phases are excluded here and analyzed as failure modes in Section 5.4.
 
 | Metric | Value | Interpretation |
-|---|---:|---|
-| Deployment length | TODO | Calendar duration |
-| Runtime before intervention | TODO | True autonomy |
-| Uptime | TODO | Percent of expected logging period with valid records |
-| Data completeness | TODO | Percent of expected samples received |
-| Battery low-voltage events | TODO | Power limitation indicator |
-| Sensor dropout events | TODO | Sensor or firmware limitation |
-| Maintenance events | TODO | Practical field burden |
+|---|---|---|
+| Deployment length | 22 days (Apr 20 – May 11, provisional window) | Calendar duration outdoors |
+| Runtime before intervention | ≥ 22 days, unattended | No brownout reset and no maintenance signature within the window |
+| Uptime | 100% of the window's records are operational (4,735 of 4,736) | No brownout resets occurred outdoors |
+| Data completeness | 91.4% vs the observed 6-min cadence | Configured cadence unconfirmed; completeness is relative to observed median interval |
+| Upload success | 95.7% of records | Cellular HTTP POST |
+| Battery low-voltage events | 0 in window (median 3.941 V) | Solar charging sustained the single-cell Li-ion |
+| Sensor dropout events | 1 record with invalid environmental read | Isolated |
+| Maintenance events | 0 within window | Deployment ended at a 414-h recording gap whose cause is unconfirmed |
+| Internal temperature span | 4.1 to 31.7 °C | Environmental exposure achieved without electrical failure |
 
-### 5.4 Failure modes
+The headline autonomy result: **zero brownout resets during the entire 22-day outdoor deployment, at 95.7% upload success and 91.4% completeness**. For context, all 4,079 brownout resets across both logs occurred during indoor-signature (bench) phases. Reporting completeness and yield as results of record follows the field-deployment literature [@szewczyk2004; @feinberg2018]; the sharp bench-versus-field behavioral split echoes the deployment-practice warning that lab conditions do not predict field conditions — in this case, in the unexpected direction [@barrenetxea2008].
 
-Failure modes should be coded by type:
+### 5.4 Failure modes (preliminary)
 
-- calibration failure: persistent bias, drift, environmental cross-sensitivity;
-- power failure: battery depletion, regulator instability, solar charging failure;
-- enclosure failure: heat buildup, water ingress, condensation, UV damage, broken mount;
-- firmware/data failure: missing timestamps, SD write errors, wireless upload failure, watchdog resets;
-- maintenance failure: difficult access, fragile connectors, repeated manual intervention.
+Observed failures, coded by the taxonomy below:
+
+- **Power failure — two distinct brownout modes, both on the bench.** The commissioning phase (Mar 26 – Apr 4) shows 99.8% brownout resets at healthy battery voltages (31.5% of Log A's brownout records occur at ≥ 3.8 V — voltages that later sustained 22 flawless days outdoors), consistent with a load-transient/regulator interaction or a bench power-setup difference rather than depletion. The terminal phase (May 28 – Jun 4) shows brownouts at a median 3.53 V — classic depletion. These modes imply different fixes; field data alone would have revealed neither, since the field window contains no brownouts at all.
+- **Firmware/data failure — upload failure is power-coupled, not connectivity-coupled.** Zero of 4,079 brownout records produced a successful upload, while median cellular signal quality is indistinguishable between failed and successful records (RSSI 17 vs 16 in Log A; 18 vs 18 in Log B). The radio link is exonerated.
+- **Firmware/data failure — brownout resets corrupt the environmental read.** 1,501 of Log A's 1,511 zero-humidity records occur on brownout records; environmental channels from brownout-recovery records are excluded from any environmental summary.
+- **Instrumentation gap — battery temperature unrecorded.** The fuel-gauge temperature channel reports a −42 sentinel on every record, removing battery temperature from the analyzable variable set.
+- Calibration, enclosure (water ingress, heat buildup), and maintenance failure classes: no observable evidence either way in these logs — assessment requires the reference co-location and a documented deployment protocol.
 
 ## 6. Discussion
 
