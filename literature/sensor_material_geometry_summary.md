@@ -265,6 +265,14 @@ This document separates information explicitly reported by each paper from infor
 | Winter et al. (2025) | Alphasense NO2-B43F, Ox-B431, NO-B4, CO-B4 | BEACO2N node packaging not described in detail | Shows calibrated sensing can remain stable for three years while mechanical/electrical failures occur first |
 | Jin et al. (2026) | Thin-film Pt100 in copper spherical shell | Square plates, bowl-cover shrouds; CFD comparisons of plastic, wood, Fe-Ni alloy, and aluminum | Recent material-and-airflow geometry optimization with outdoor validation |
 
+## Additional Literature Added in July 2026 (field reliability and data yield)
+
+| Paper | Sensors | Reported material / geometry | Experimental contribution |
+|---|---|---|---|
+| Szewczyk et al. (2004) | ~150 habitat-monitoring motes (temperature/humidity/light class) | Weatherproofed mote packaging; full packaging detail is in companion papers and was not re-verified here | Canonical analysis of a real 4-month deployment: lifetime, node mortality, and data yield reported as primary systems results |
+| Barrenetxea et al. (2008) | SensorScope solar-powered environmental stations (meteorological suite) | Mast-mounted outdoor stations; packaging detail in project papers, not re-verified here | Deployment-practice guide from repeated campaigns: a functioning network does not guarantee meaningful data; pitfalls span development, packaging, power, and on-site validation |
+| Feinberg et al. (2018) | Low-cost PM, O3, and NO2 sensors in triplicate | Sensor packages as shipped; enclosure detail not re-verified here | 7-month FEM collocation in Denver evaluating data completeness explicitly alongside correlation and trend reproduction |
+
 ## Consolidated Existing Material Options
 
 The following materials are explicitly present in the current literature set.
@@ -348,3 +356,6 @@ The key geometry variables to record or control are:
 - Deford et al. (2025): https://doi.org/10.1175/JTECH-D-24-0006.1
 - Winter et al. (2025): https://doi.org/10.1021/acssensors.5c00566
 - Jin et al. (2026): https://doi.org/10.3390/atmos17030272
+- Szewczyk et al. (2004): https://doi.org/10.1145/1031495.1031521
+- Barrenetxea et al. (2008): https://doi.org/10.1145/1460412.1460418
+- Feinberg et al. (2018): https://doi.org/10.5194/amt-11-4605-2018
