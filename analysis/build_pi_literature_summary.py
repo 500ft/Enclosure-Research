@@ -64,7 +64,7 @@ profiles = [
     },
     {
         "category": "Complete Sensor-Box and Field-System Studies",
-        "citation": "Grimsley et al. (2022)",
+        "citation": "Grimsley et al. (2021)",
         "title": "Experiences in LP-IoT: EnviSense Deployment of Remotely Reprogrammable Environmental Sensors",
         "doi": "10.1145/3477085.3478988",
         "sensors": "MaxBotix ultrasonic range sensor or SDI-12 pressure transducer; internal T/RH/pressure; battery voltage/current; GPS; LoRa.",
@@ -351,6 +351,125 @@ profiles = [
             "Record board, connector, power, and enclosure failures alongside sensing-element behavior.",
         ],
     },
+    {
+        "category": "Standards and Evaluation Protocols (23-Source Base)",
+        "citation": "Duvall et al. (2021; EPA/600/R-20/280)",
+        "title": "Performance Testing Protocols, Metrics, and Target Values for Fine Particulate Matter Air Sensors",
+        "url": "https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=350785",
+        "sensors": "No specific model; applies to PM2.5 air sensors used for ambient, outdoor, fixed-site, non-regulatory monitoring.",
+        "materials": "Not addressed; the protocol evaluates a sensor system as a unit.",
+        "geometry": "Not addressed; enclosure design and shielding are outside the protocol's scope.",
+        "setup": "Base field testing recommends at least three identical units co-located with FRM/FEM reference monitors for at least 30 days per site.",
+        "shows": "A defensible evaluation should report R², slope, intercept, RMSE/NRMSE, and data completeness under a defined co-location protocol.",
+        "conclusion": "The protocol supplies a repeatable PM2.5 performance framework, but it does not certify a sensor or justify enclosure design choices.",
+        "importance": "Anchors the proposed 30-day co-location target and the accuracy and completeness metrics for any PM channel.",
+        "consider": [
+            "Use the EPA metric set consistently across enclosure variants.",
+            "Do not transfer PM2.5 target values to temperature, RH, pressure, or gas channels.",
+        ],
+    },
+    {
+        "category": "Standards and Evaluation Protocols (23-Source Base)",
+        "citation": "World Meteorological Organization (2023)",
+        "title": "Guide to Instruments and Methods of Observation (WMO-No. 8), Volume I: Measurement of Meteorological Variables",
+        "url": "https://library.wmo.int/records/item/68695-guide-to-instruments-and-methods-of-observation",
+        "sensors": "No specific models; covers measurement practice for temperature, humidity, pressure, wind, radiation, and precipitation instruments.",
+        "materials": "Discusses radiation screens and shields as measurement practice; does not compare printed enclosure materials.",
+        "geometry": "Defines exposure and siting considerations such as shielding, mounting height, and distance from surfaces and obstructions.",
+        "setup": "Operational meteorological guidance for instrument exposure, reference practice, and measurement uncertainty.",
+        "shows": "Reference quality depends on documented siting, shielding, exposure, and uncertainty—not only sensor specification.",
+        "conclusion": "WMO practice defines the measurement target and reference context, but not a specific low-cost enclosure solution.",
+        "importance": "Anchors the deployment-siting rules and the requirement to document reference-instrument uncertainty.",
+        "consider": [
+            "State which WMO exposure practices the deployment follows and document any unavoidable departures.",
+            "Use the shield literature, not WMO-No. 8 alone, to select low-cost materials and geometry.",
+        ],
+    },
+    {
+        "category": "Standards and Evaluation Protocols (23-Source Base)",
+        "citation": "ASTM International (2022)",
+        "title": "ASTM D8406-22: Standard Practice for Performance Evaluation of Ambient Outdoor Air Quality Sensors and Sensor-Based Instruments for Portable and Fixed-Point Measurement",
+        "url": "https://store.astm.org/d8406-22.html",
+        "sensors": "No specific models; applies to outdoor sensor instruments for O3, CO, NO2, SO2, PM10, and PM2.5.",
+        "materials": "Not addressed; the practice evaluates instrument performance rather than enclosure materials.",
+        "geometry": "Not addressed; portable and fixed-point instruments are evaluated as complete systems.",
+        "setup": "Standardized field performance evaluation for ambient outdoor air-quality sensor instruments; characterization here is limited to the published scope.",
+        "shows": "A consensus standard exists for the same broad fixed-point outdoor instrument class as the proposed box.",
+        "conclusion": "ASTM D8406-22 strengthens the methods basis for gas and PM evaluation but cannot support enclosure claims from its public scope alone.",
+        "importance": "Provides a citable consensus-standard counterpart to the EPA protocol for gas and particulate channels.",
+        "consider": [
+            "Keep claims at scope level until the paywalled full standard is obtained and reviewed.",
+            "Use separate meteorological guidance and shield evidence for T/RH siting and enclosure design.",
+        ],
+    },
+    {
+        "category": "Standards and Evaluation Protocols (23-Source Base)",
+        "citation": "European Committee for Standardization (2021)",
+        "title": "CEN/TS 17660-1:2021: Air Quality—Performance Evaluation of Air Quality Sensor Systems—Part 1: Gaseous Pollutants in Ambient Air",
+        "url": "https://standards.cencenelec.eu/dyn/www/f?p=205:110:0::::FSP_PROJECT:65599",
+        "sensors": "No specific models; applies to systems for O3, NO/NO2/NOx, CO, SO2, and benzene in ambient air.",
+        "materials": "Not addressed; the specification classifies system performance, not enclosure materials.",
+        "geometry": "Not addressed; enclosure and airflow design are outside the published scope.",
+        "setup": "Harmonized laboratory and field evaluation with performance classes, including a class for non-regulatory applications; characterization here is limited to the published scope.",
+        "shows": "Performance classes offer a useful model for tiered acceptance thresholds rather than one universal pass/fail line.",
+        "conclusion": "The specification supports class-based gas-sensor evaluation but does not justify physical enclosure choices.",
+        "importance": "Provides a European framework for tiered acceptance criteria for gaseous-pollutant channels.",
+        "consider": [
+            "Keep claims at scope level until the paywalled full specification is obtained and reviewed.",
+            "Do not apply Part 1 gas criteria to PM or meteorological channels.",
+        ],
+    },
+    {
+        "category": "Additional Field-Reliability and Data-Yield Studies",
+        "citation": "Szewczyk et al. (2004)",
+        "title": "An Analysis of a Large Scale Habitat Monitoring Application",
+        "doi": "10.1145/1031495.1031521",
+        "sensors": "Habitat-monitoring motes with temperature, humidity, and light-class sensing; exact part numbers were not re-verified for this synthesis update.",
+        "materials": "Weatherproofed mote packaging; detailed material and packaging information was not re-verified and is not used as enclosure evidence here.",
+        "geometry": "Approximately 150 devices organized across single-hop and multi-hop network tiers; shield geometry was not a study variable.",
+        "setup": "Four-month Great Duck Island field deployment focused on lifetime, node mortality, reliability, and data yield.",
+        "shows": "Multi-month field studies should treat node mortality and usable data yield as primary results, not implementation footnotes.",
+        "conclusion": "Deployment reliability and completeness can limit scientific value even when individual sensors function as expected.",
+        "importance": "Supports reporting uptime, data yield, and failure analysis as first-class results in the enclosure paper.",
+        "consider": [
+            "Separate deployment-phase failures from bench behavior and sensor-calibration error.",
+            "Do not cite this paper for enclosure material or geometry choices without re-verifying the full packaging description.",
+        ],
+    },
+    {
+        "category": "Additional Field-Reliability and Data-Yield Studies",
+        "citation": "Barrenetxea et al. (2008)",
+        "title": "The Hitchhiker's Guide to Successful Wireless Sensor Network Deployments",
+        "doi": "10.1145/1460412.1460418",
+        "sensors": "SensorScope solar-powered environmental stations with a meteorological sensing suite; exact sensor models were not re-verified for this synthesis update.",
+        "materials": "Mast-mounted station packaging; detailed materials were not re-verified and are not used as enclosure evidence here.",
+        "geometry": "Distributed outdoor stations used across multiple campaigns; enclosure thermal geometry was not isolated experimentally.",
+        "setup": "Experience and methodology synthesis drawn from repeated SensorScope environmental-monitoring campaigns.",
+        "shows": "A technically functioning network does not guarantee meaningful data; deployment problems span development, packaging, power, and on-site validation.",
+        "conclusion": "Protocol discipline and field-realistic pre-deployment checks are essential to interpreting sensor-network results.",
+        "importance": "Supports documenting placement, retrieval, power configuration, maintenance, and validation rather than reconstructing the deployment timeline afterward.",
+        "consider": [
+            "Bench-test the complete system under the same power and communication conditions expected in the field.",
+            "Do not cite this source as direct evidence for shield geometry or material selection.",
+        ],
+    },
+    {
+        "category": "Additional Field-Reliability and Data-Yield Studies",
+        "citation": "Feinberg et al. (2018)",
+        "title": "Long-Term Evaluation of Air Sensor Technology under Ambient Conditions in Denver, Colorado",
+        "doi": "10.5194/amt-11-4605-2018",
+        "sensors": "Commercial low-cost PM, ozone, and NO2 sensor packages deployed in triplicate against FEM monitors; model-level details were not re-verified for this update.",
+        "materials": "Manufacturer-supplied sensor-package enclosures; enclosure construction was not re-verified and was not an isolated study variable.",
+        "geometry": "Triplicate packages co-located at an urban regulatory monitoring site.",
+        "setup": "Seven-month Denver field evaluation spanning seasonal conditions and comparing completeness, correlation, and trend reproduction with FEM references.",
+        "shows": "Data completeness belongs beside accuracy as a long-term performance metric, and triplicate units help expose unit-to-unit variability.",
+        "conclusion": "A long deployment can reveal completeness and repeatability limits that a short calibration exercise cannot.",
+        "importance": "Directly supports the manuscript's completeness analysis and the need to establish whether deployment logs represent separate units.",
+        "consider": [
+            "Deploy more than one identical unit when possible to bound unit-to-unit variability.",
+            "Do not generalize Denver-specific performance values or infer enclosure effects that the study did not isolate.",
+        ],
+    },
 ]
 
 
@@ -473,7 +592,13 @@ def add_profile(doc, profile, number):
     add_heading(doc, f"{number}. {profile['citation']}", 2)
     p = add_para(doc, profile["title"], color=DARK, size=11, after=3, keep=True)
     p.runs[0].italic = True
-    add_para(doc, f"DOI: https://doi.org/{profile['doi']}", color=MID_GRAY, size=8.8, after=6, keep=True)
+    if "doi" in profile:
+        source_label = "DOI"
+        source_url = f"https://doi.org/{profile['doi']}"
+    else:
+        source_label = "Source"
+        source_url = profile["url"]
+    add_para(doc, f"{source_label}: {source_url}", color=MID_GRAY, size=8.8, after=6, keep=True)
     add_key_facts_table(doc, profile)
     add_para(doc, f"What it shows: {profile['shows']}", bold_lead="What it shows: ", after=4)
     add_para(doc, f"Brief conclusion: {profile['conclusion']}", bold_lead="Brief conclusion: ", after=4)
@@ -505,6 +630,8 @@ def add_summary_table(doc):
         "Complete Sensor-Box and Field-System Studies": "Complete system / autonomy",
         "Radiation-Shield Geometry and Material Studies": "Shield geometry / material",
         "Calibration, Drift, and Air-Quality Sensor Studies": "Calibration / drift",
+        "Standards and Evaluation Protocols (23-Source Base)": "Protocol / evaluation standard",
+        "Additional Field-Reliability and Data-Yield Studies": "Field reliability / data yield",
     }
     for i, profile in enumerate(profiles, 1):
         cells = table.add_row().cells
@@ -592,7 +719,7 @@ def build_document():
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p.paragraph_format.space_after = Pt(22)
-    set_run(p.add_run("Summary of the 19 research sources currently included in the Enclosure-Research repository"), size=12, italic=True, color=MID_GRAY)
+    set_run(p.add_run("26-source synthesis: the 23-source base plus 3 field-reliability and data-yield additions"), size=12, italic=True, color=MID_GRAY)
 
     table = doc.add_table(rows=3, cols=2)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -602,7 +729,7 @@ def build_document():
         [
             ("Prepared for", "Principal Investigator review"),
             ("Working paper", "Calibration, Ambient Conditions, and Integration Effects on the Accuracy and Autonomy of a Low-Cost Outdoor Multi-Sensor Box"),
-            ("Date", "June 11, 2026"),
+            ("Date", "July 27, 2026"),
         ],
     ):
         row.cells[0].width = Inches(1.25)
@@ -644,6 +771,11 @@ def build_document():
         "The strongest recurring result is that passive shields fail most noticeably during high-solar, low-wind conditions. Stacked plates, overlapping louvers, reflective surfaces, and separated electronics improve performance without consuming power. Active aspiration can further reduce airflow-dependent bias, but the fan directly reduces autonomy and adds a failure mode. Long-duration deployments consistently show that connectors, mounts, batteries, charging, storage, communications, and firmware may fail before the sensing element itself.",
         after=7,
     )
+    add_para(
+        doc,
+        "This update preserves the 23-source base (19 research papers and four standards or protocols) and adds three field-reliability studies. Together they anchor siting, metrics, completeness, deployment records, and failure analysis.",
+        after=7,
+    )
     add_heading(doc, "Implications for the Proposed Paper", 2)
     for item in [
         "Begin with the current lab box as an unchanged baseline and compare it with reference instruments.",
@@ -669,9 +801,8 @@ def build_document():
     add_bullet(doc, "Battery life alone is not autonomy; physical intervention can be triggered by water, corrosion, memory, fan, firmware, RF, connector, or mounting failures.")
     add_bullet(doc, "Pre/post co-location and device-health logging improve the ability to identify drift and limiting failures.")
 
-    doc.add_page_break()
     add_heading(doc, "Literature at a Glance", 1)
-    add_para(doc, "The table below identifies the primary contribution of each source. Detailed source profiles follow.", color=MID_GRAY, size=9.5, after=8)
+    add_para(doc, "The table below identifies the primary contribution of all 26 sources: the 23-source base followed by three field-reliability and data-yield additions. Detailed source profiles follow.", color=MID_GRAY, size=9.5, after=8)
     add_summary_table(doc)
 
     current_category = None
@@ -685,8 +816,12 @@ def build_document():
                 add_para(doc, "These papers show how sensors, packaging, power, communication, and maintenance behave as one deployed system.", color=MID_GRAY, size=9.5)
             elif current_category == "Radiation-Shield Geometry and Material Studies":
                 add_para(doc, "These papers provide the strongest evidence for selecting and comparing passive and active shield designs.", color=MID_GRAY, size=9.5)
-            else:
+            elif current_category == "Calibration, Drift, and Air-Quality Sensor Studies":
                 add_para(doc, "These papers define calibration, drift, environmental correction, and long-term validation requirements.", color=MID_GRAY, size=9.5)
+            elif current_category == "Standards and Evaluation Protocols (23-Source Base)":
+                add_para(doc, "These four sources complete the documented 23-source base by anchoring siting, co-location, metrics, and performance-class framing. They are standards or protocols, not experimental papers.", color=MID_GRAY, size=9.5)
+            else:
+                add_para(doc, "These three later additions strengthen the evidence for completeness, deployment documentation, unit variability, and failure analysis. Their enclosure details are not used beyond what was verified.", color=MID_GRAY, size=9.5)
         number += 1
         add_profile(doc, profile, number)
 
@@ -744,7 +879,7 @@ def build_document():
     add_heading(doc, "Overall Conclusion", 1)
     add_para(
         doc,
-        "Across the 19 sources, the strongest evidence supports a two-zone outdoor sensor-box architecture: protected electronics and power in a sealed, serviceable enclosure, with ambient sensors placed in an external or separately ventilated shield. A light-colored passive stacked-plate or cone shield is the most defensible low-power baseline. Active aspiration is valuable as an accuracy benchmark but must be evaluated against its power and maintenance cost. The paper should therefore report calibration improvement and physical-design performance together, while using observed intervention-free runtime and data completeness to define autonomy.",
+        "Across the 26 sources (22 research papers and four standards or protocols), the strongest evidence supports a two-zone outdoor sensor-box architecture: protected electronics and power in a sealed, serviceable enclosure, with ambient sensors placed in an external or separately ventilated shield. A light-colored passive stacked-plate or cone shield is the most defensible low-power baseline. Active aspiration is valuable as an accuracy benchmark but must be evaluated against its power and maintenance cost. The paper should therefore report calibration improvement and physical-design performance together, while using observed intervention-free runtime and data completeness to define autonomy.",
         after=8,
     )
     add_para(
@@ -756,11 +891,12 @@ def build_document():
     add_heading(doc, "Reference List", 1)
     for profile in profiles:
         p = doc.add_paragraph()
-        p.paragraph_format.space_after = Pt(5)
+        p.paragraph_format.space_after = Pt(3)
         p.paragraph_format.line_spacing = 1.05
         set_run(p.add_run(f"{profile['citation']}. "), size=9, bold=True, color=DARK)
         set_run(p.add_run(f"{profile['title']}. "), size=9, italic=True, color=BLACK)
-        set_run(p.add_run(f"https://doi.org/{profile['doi']}"), size=9, color=BLUE)
+        source_url = f"https://doi.org/{profile['doi']}" if "doi" in profile else profile["url"]
+        set_run(p.add_run(source_url), size=9, color=BLUE)
 
     doc.save(OUT_DOCX)
     print(OUT_DOCX)
