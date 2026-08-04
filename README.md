@@ -1,8 +1,28 @@
 # Enclosure Research
 
-Working repository for the paper:
+Enclosure Research is a reproducible research toolkit for designing and
+evaluating low-cost outdoor multi-sensor boxes.
 
-**Calibration, Ambient Conditions, and Integration Effects on the Accuracy and Autonomy of a Low-Cost Outdoor Multi-Sensor Box**
+Outdoor sensor readings can be biased by calibration, solar heating, airflow,
+sealing, placement, and maintenance. This repository connects those factors
+through a verified literature matrix, deployment templates, analysis scripts,
+and a CAD/FEA workstream for comparing enclosure designs.
+
+![Predicted enclosure thermal bias](analysis/figures/thermal_bias.png)
+
+### Key capabilities
+
+- Compares sensor accuracy before and after calibration.
+- Computes uptime, data completeness, and maintenance metrics.
+- Models solar self-heating, venting, sealing, and structural trade-offs.
+- Enforces evidence coverage for every sensor and enclosure source.
+
+**For:** environmental-sensing researchers, engineering students, and labs
+building field-deployed sensor boxes.
+
+**Start here:** read [`paper/manuscript_v1.md`](paper/manuscript_v1.md), complete
+the files in [`templates/`](templates/), and run
+`python3 analysis/check_literature_coverage.py`.
 
 ## Current V1.0 scope
 
