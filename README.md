@@ -1,93 +1,144 @@
 # Enclosure Research
 
-Enclosure Research is a toolkit for designing and evaluating low-cost outdoor
-multi-sensor boxes.
+[![CI](https://github.com/500ft/Enclosure-Research/actions/workflows/ci.yml/badge.svg)](https://github.com/500ft/Enclosure-Research/actions/workflows/ci.yml)
+[![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Sources: 26](https://img.shields.io/badge/literature_sources-26-276c6b)](literature/literature_matrix.csv)
 
-Outdoor sensor readings can be biased by calibration, solar heating, airflow,
-sealing, placement, and maintenance. This repository connects those factors
-through a literature matrix, deployment templates, analysis scripts,
-and a CAD/FEA workstream for comparing enclosure designs.
+A research and analysis toolkit for evaluating low-cost outdoor sensor boxes as
+complete deployed systems: sensors, enclosure, power, firmware, calibration,
+and maintenance.
+
+**[Results](#current-results) · [Quick start](#quick-start) · [Workflow](#study-workflow) · [Documentation](#documentation) · [Contributing](#contributing)**
 
 ![Predicted enclosure thermal bias](analysis/figures/thermal_bias.png)
 
-### Key capabilities
+*First-order simulation of temperature and relative-humidity bias for a closed
+box, a passive radiation shield, and an aspirated reference. Lab comparison is
+still pending.*
 
-- Compares sensor accuracy before and after calibration.
-- Computes uptime, data completeness, and maintenance metrics.
-- Models solar self-heating, venting, sealing, and structural trade-offs.
-- Tracks a sensor and enclosure analysis for every literature source.
+## Overview
 
-**For:** environmental-sensing researchers, engineering students, and labs
-building field-deployed sensor boxes.
+An outdoor sensor can meet its datasheet specification and still produce poor
+field data after solar heating, restricted airflow, water ingress, power loss,
+or upload failures are introduced by the assembled box. This project combines
+literature review, field-log analysis, calibration templates, and CAD/FEA plans
+so enclosure decisions can be evaluated at system level.
 
-**Start here:** read [`paper/manuscript_v1.md`](paper/manuscript_v1.md), complete
-the files in [`templates/`](templates/), and run
-`python3 analysis/check_literature_coverage.py`.
+| | |
+| --- | --- |
+| **Project stage** | V1 manuscript and preliminary field-log analysis |
+| **Literature set** | 26 sources with matching sensor and enclosure notes |
+| **Field window** | Provisional 22-day unattended outdoor deployment |
+| **Design comparison** | Closed box, passive shield, and aspirated reference |
+| **Pending work** | Reference co-location, lab inventory, CAD, and FEA |
 
-## Current V1.0 scope
+## Current results
 
-This repo has been reframed from an enclosure-only study into a full deployed sensor-box evaluation. The current draft focuses on:
+### Preliminary field-log summary
 
-- sensor accuracy against reference measurements
-- calibration improvement from raw to corrected data
-- autonomy, uptime, data completeness, and maintenance burden
-- enclosure material, geometry, airflow, sealing, and weather exposure
-- a decision framework for future lab sensor-box designs
+The current manuscript reports the following provisional values from the first
+deployment-log audit:
 
-## CAD & FEA Design/Analysis Workstream
+| Metric | Result |
+| --- | ---: |
+| Outdoor observation window | 22 days |
+| Upload success | 95.7% |
+| Data completeness | 91.4% |
+| Outdoor brownout resets | 0 |
 
-The author can build parametric CAD and run finite-element analysis (thermal, fluid, and structural), so the enclosure design choices in this study are intended to be *analyzed*, not only described. The current draft synthesizes how material, geometry, airflow, and sealing affect a deployed sensor box; this workstream turns those qualitative lessons into modeled comparisons. Concretely, it covers parametric models of the baseline box and the candidate radiation-shield variants, steady-state thermal / conjugate-heat-transfer estimates of solar self-heating bias on temperature, relative humidity, and gas readings, natural-convection venting checks for the passive shield, and structural / modal analysis for the rugged-installation extension.
+The raw deployment export is not included in this repository. Accuracy and
+calibration results remain pending until reference co-location data are
+available.
 
-These analyses feed the paper's decision framework for future lab sensor-box designs. Each modeled variant maps to a design recommendation, allowing material, airflow, sealing, and geometry choices to be compared quantitatively. Thermal and structural values are simulation outputs; comparison with lab data and co-location measurements is pending. Regulatory certification is outside this workstream. The full plan, deliverables, and test hooks are in `docs/cad_fea_plan.md`.
+### Thermal model
 
-## Files
+At `G = 1000 W/m²` over `0–5 m/s` wind, the analytical model predicts:
 
-- `paper/manuscript_v1.md` - working manuscript V1.0
-- `paper/references.bib` - first-pass bibliography
-- `literature/literature_matrix.csv` - literature extraction matrix
-- `literature/sensor_material_geometry_summary.md` - sensor, material, geometry, and setup comparison
-- `literature/additional_literature_list.md` - prioritized list of newly identified research
-- `ProConsList/` - required per-paper sensor and physical-box pros/cons analyses
-- `templates/baseline_system_description.md` - lab box inventory template
-- `templates/deployment_log.csv` - field deployment log template
-- `templates/calibration_metrics.md` - metric definitions and reporting table
-- `analysis/compute_metrics.py` - helper script for first-pass accuracy, uptime, and completeness metrics
-- `docs/cad_fea_plan.md` - planned CAD and FEA workstream (variants, thermal/venting/structural/sealing analyses, decision mapping)
-- `deliverables/PI_Literature_Synthesis_Outdoor_Sensor_Box.pdf` - PI-ready synthesis of all 26 sources (23-source base plus 3 field-reliability additions)
-- `deliverables/PI_Literature_Synthesis_Outdoor_Sensor_Box.docx` - editable version of the PI literature synthesis
+| Variant | Temperature rise | Relative-humidity error |
+| --- | ---: | ---: |
+| Closed baseline box | 8.3–22.7 °C | −18.6 to −35.0 %RH |
+| Passive multi-plate shield | 0.9–3.7 °C | −2.5 to −9.4 %RH |
+| Aspirated reference | about 1.3 °C | about −3.7 %RH |
 
-## Current PI Deliverable
+These values are simulation outputs. Inputs, sensitivity checks, and literature
+brackets are documented in
+[`analysis/thermal_bias_results.md`](analysis/thermal_bias_results.md).
 
-The literature synthesis summarizes every source currently referenced in the repository. For each paper, it records:
+| Field reliability | Deployment diagnostics |
+| --- | --- |
+| ![Daily brownout timeline](analysis/figures/deployment_daily_brownout.png) | ![Battery voltage by outcome](analysis/figures/deployment_battv_outcome.png) |
 
-- sensors used;
-- reported materials and enclosure geometry;
-- experimental setup;
-- main result and brief conclusion;
-- relevance to the proposed lab-box study;
-- considerations for the experimental phase.
+## Study workflow
 
-The synthesis also recommends framing the experiment around the current box baseline, a passive radiation shield, and an optional actively aspirated accuracy benchmark.
-
-## Next data needed from the lab
-
-Before field results can be added, collect:
-
-- exact sensor model names and datasheets
-- microcontroller/logger model
-- power system details, battery capacity, solar panel if any
-- enclosure material and geometry
-- sensor placement, venting, sealing, and cable routing
-- logging interval and storage/transmission method
-- reference instrument used for co-location
-- deployment timestamps, maintenance events, and failure notes
-
-## Adding Literature
-
-Every new paper must include a sensor-selection and physical-box analysis in `ProConsList/`. Follow `ProConsList/README.md` and use `ProConsList/TEMPLATE.md`. Run:
-
-```bash
-python3 analysis/check_literature_coverage.py
+```mermaid
+flowchart LR
+    A[Literature matrix] --> B[Baseline box inventory]
+    B --> C[Field deployment logs]
+    C --> D[Accuracy and reliability metrics]
+    B --> E[Parametric enclosure variants]
+    E --> F[Thermal, airflow, sealing, and structural analysis]
+    D --> G[Design decision framework]
+    F --> G
 ```
 
-before considering a literature update complete.
+Every bibliography entry has a matching `ProConsList/` record covering the
+sensor choice and the physical box or experimental setup. The CI check prevents
+those records from drifting apart.
+
+## Quick start
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python analysis/check_literature_coverage.py
+python analysis/thermal_bias.py
+```
+
+Analyze an exported deployment-log directory with:
+
+```bash
+python analysis/analyze_deployment_logs.py \
+  --data-dir /path/to/export \
+  --out-dir analysis/output
+```
+
+The raw data path is supplied explicitly; the repository does not include the
+lab's source export.
+
+## Documentation
+
+| Document | Purpose |
+| --- | --- |
+| [`paper/manuscript_v1.md`](paper/manuscript_v1.md) | Working paper and current field-log results |
+| [`literature/literature_matrix.csv`](literature/literature_matrix.csv) | Source-level extraction matrix |
+| [`literature/sensor_material_geometry_summary.md`](literature/sensor_material_geometry_summary.md) | Sensor, material, geometry, and setup comparison |
+| [`ProConsList/README.md`](ProConsList/README.md) | Per-source review rules and template |
+| [`docs/cad_fea_plan.md`](docs/cad_fea_plan.md) | Planned enclosure variants and analysis gates |
+| [`templates/`](templates/) | Baseline inventory, deployment log, and calibration templates |
+| [`deliverables/PI_Literature_Synthesis_Outdoor_Sensor_Box.pdf`](deliverables/PI_Literature_Synthesis_Outdoor_Sensor_Box.pdf) | 26-source PI literature synthesis |
+| [`ROADMAP.md`](ROADMAP.md) | Milestones and remaining lab inputs |
+
+## Repository map
+
+```text
+analysis/      metrics, deployment-log analysis, thermal model, and figures
+literature/    source matrix and cross-source comparison tables
+ProConsList/   one sensor/enclosure assessment per bibliography entry
+paper/         manuscript source and bibliography
+templates/     structured files for the next lab deployment
+deliverables/  PI-facing reports and rendered summaries
+docs/          CAD/FEA plan and review notes
+```
+
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md). Literature contributions must update
+the bibliography, literature matrix, summary, and matching `ProConsList/` file
+in the same change.
+
+## License
+
+No open-source license file is currently included. Contact the repository owner
+before reusing code, figures, or document content outside the permissions
+provided by copyright law.
