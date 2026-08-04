@@ -53,7 +53,7 @@ These analyses feed the paper's decision framework for future lab sensor-box des
 - `templates/calibration_metrics.md` - metric definitions and reporting table
 - `analysis/compute_metrics.py` - helper script for first-pass accuracy, uptime, and completeness metrics
 - `docs/cad_fea_plan.md` - planned CAD and FEA workstream (variants, thermal/venting/structural/sealing analyses, decision mapping)
-- `deliverables/PI_Literature_Synthesis_Outdoor_Sensor_Box.pdf` - PI-ready synthesis of all 19 literature sources
+- `deliverables/PI_Literature_Synthesis_Outdoor_Sensor_Box.pdf` - PI-ready synthesis of all 26 sources (23-source base plus 3 field-reliability additions)
 - `deliverables/PI_Literature_Synthesis_Outdoor_Sensor_Box.docx` - editable version of the PI literature synthesis
 
 ## Current PI Deliverable
