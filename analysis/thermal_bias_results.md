@@ -5,8 +5,8 @@ certified or regulatory-grade result.** Every value below is a first-order
 analytical prediction produced by `analysis/thermal_bias.py`. This lumped
 steady-state result is the **analytical baseline that the later
 conjugate-heat-transfer (CHT) FEA (`docs/cad_fea_plan.md` Section 3.2) will
-refine**; it is reported as a prediction, consistent with the honesty
-constraints in `README.md` and the CAD/FEA plan.
+refine**; it is reported as a prediction, consistent with the evidence labels
+in `README.md` and the CAD/FEA plan.
 
 Regenerate with:
 
