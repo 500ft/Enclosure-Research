@@ -1,0 +1,12 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 849949b..7985e15 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -23,3 +23,7 @@ jobs:
+         run: python analysis/check_literature_coverage.py
+       - name: Run analytical thermal model
+         run: python analysis/thermal_bias.py --no-figure
++      - name: Thermal table matches the committed artifact
++        run: |
++          python analysis/thermal_bias.py --no-figure --table /tmp/table.csv
++          diff -u analysis/output/thermal_bias_table.csv /tmp/table.csv
