@@ -1,0 +1,32 @@
+# SIMULATION -- pending lab co-location data; see docs/results.md
+g_w_m2,wind_m_s,variant_id,variant_name,delta_t_degc,rh_err_pct
+800,0.0,V0,Baseline closed box,17.6215,-30.6846
+800,0.0,V1,Passive multi-plate shield,2.9523,-7.7247
+800,0.0,V2,Actively aspirated reference,1.0766,-2.9878
+800,0.5,V0,Baseline closed box,15.0408,-27.9586
+800,0.5,V1,Passive multi-plate shield,2.4025,-6.3945
+800,0.5,V2,Actively aspirated reference,1.0766,-2.9878
+800,1.0,V0,Baseline closed box,13.1021,-25.6224
+800,1.0,V1,Passive multi-plate shield,1.9990,-5.3882
+800,1.0,V2,Actively aspirated reference,1.0766,-2.9878
+800,2.0,V0,Baseline closed box,10.3971,-21.8785
+800,2.0,V1,Passive multi-plate shield,1.4530,-3.9845
+800,2.0,V2,Actively aspirated reference,1.0766,-2.9878
+800,5.0,V0,Baseline closed box,6.3947,-15.0821
+800,5.0,V1,Passive multi-plate shield,0.7276,-2.0420
+800,5.0,V2,Actively aspirated reference,1.0766,-2.9878
+1000,0.0,V0,Baseline closed box,22.6643,-34.9771
+1000,0.0,V1,Passive multi-plate shield,3.6878,-9.4332
+1000,0.0,V2,Actively aspirated reference,1.3466,-3.7052
+1000,0.5,V0,Baseline closed box,19.4162,-32.3548
+1000,0.5,V1,Passive multi-plate shield,3.0025,-7.8439
+1000,0.5,V2,Actively aspirated reference,1.3466,-3.7052
+1000,1.0,V0,Baseline closed box,16.9543,-30.0185
+1000,1.0,V1,Passive multi-plate shield,2.4990,-6.6313
+1000,1.0,V2,Actively aspirated reference,1.3466,-3.7052
+1000,2.0,V0,Baseline closed box,13.4921,-26.1140
+1000,2.0,V1,Passive multi-plate shield,1.8171,-4.9259
+1000,2.0,V2,Actively aspirated reference,1.3466,-3.7052
+1000,5.0,V0,Baseline closed box,8.3233,-18.5649
+1000,5.0,V1,Passive multi-plate shield,0.9103,-2.5398
+1000,5.0,V2,Actively aspirated reference,1.3466,-3.7052

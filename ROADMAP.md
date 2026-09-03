@@ -34,7 +34,7 @@ settled.
 
 ## Where it is now
 
-Strong literature foundation: 19-source matrix, per-paper sensor/box pros-cons
+Strong literature foundation: 26-source matrix, per-paper sensor/box pros-cons
 analyses, a PI-ready literature synthesis (PDF/DOCX), metrics scripts, and
 deployment/calibration logging templates. Manuscript v1 exists but the results
 section is a placeholder pending lab data.
