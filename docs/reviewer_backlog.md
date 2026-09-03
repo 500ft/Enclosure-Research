@@ -6,7 +6,12 @@ edits.** Every proposed citation is marked *verify against the primary source
 before adding*. Consistent with the paper's no-regulatory-claims constraint;
 nothing here overclaims — several items make the paper more conservative.
 
-Private repo: this stays with the lab. Status of each item as of this note.
+Audience note: written when this repository was private, on the assumption that it stayed
+with the lab. **The repository is public as of 2026-09-03 with the PI's approval** (see
+ROADMAP.md), so read these as notes intended for the author and PI that are now visible to
+anyone. Nothing here overclaims, but the framing assumed a private audience.
+
+Status of each item as of this note.
 
 ## Grounded — worth adding (peer-reviewed / standard)
 

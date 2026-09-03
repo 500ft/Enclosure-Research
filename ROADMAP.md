@@ -23,6 +23,13 @@ conversation with the PI to settle:
       relationship this project exists to build. Re-open visibility only with
       the PI's explicit OK. (The PI conversation itself — authorship, license,
       data timeline — is still owed.)
+
+      **Update 2026-09-03: the PI's OK was given and the repository is public
+      again.** Recorded here because the gate above required it: a repository
+      audit found the repo public while this entry still read "switched to
+      PRIVATE ... re-open only with the PI's explicit OK," and an unrecorded
+      approval is indistinguishable from an unapproved change. The two gate
+      items below — authorship/licence and the data timeline — are still open.
 - [ ] **Authorship and licensing** — confirm intended authorship order and what
       license (if any) the PI wants before adding any license file.
 - [ ] **Data timeline** — confirm whether the lab measurement data (sensor
