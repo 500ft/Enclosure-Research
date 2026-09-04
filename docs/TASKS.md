@@ -196,4 +196,3 @@ These span repositories and are tracked identically in the others they touch.
 **Why it matters.** Three CI barriers exist as reviewed patches and none of them run. Each guards a defect class that has already occurred once.
 
 **Done when.** RR-01, CR-01 and ER-02 are applied and their checks appear on subsequent pull requests.
-
