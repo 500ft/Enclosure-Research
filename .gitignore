@@ -7,3 +7,6 @@ __pycache__/
 
 output/
 tmp/
+
+# bare-repo mirrors accidentally placed in the working tree; never commit
+*.git/

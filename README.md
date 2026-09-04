@@ -1,11 +1,11 @@
 # Enclosure Research
 
+**A research toolkit for evaluating low-cost outdoor sensor boxes across
+sensing, enclosure, power, firmware, calibration, and field reliability.**
+
 [![CI](https://github.com/500ft/Enclosure-Research/actions/workflows/ci.yml/badge.svg)](https://github.com/500ft/Enclosure-Research/actions/workflows/ci.yml)
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Sources: 26](https://img.shields.io/badge/literature_sources-26-276c6b)](literature/literature_matrix.csv)
-
-A research toolkit for evaluating low-cost outdoor sensor boxes across sensing,
-enclosure, power, firmware, calibration, and field reliability.
 
 **[Results](docs/results.md) · [Reproduce](#reproduce-the-analysis) · [Data and figures](docs/data-and-figures.md) · [Manuscript](paper/manuscript_v1.md)**
 
@@ -76,7 +76,19 @@ an audit report, four plots, and filtered subsets; see
 | [`paper/manuscript_v1.md`](paper/manuscript_v1.md) | Working paper |
 | [`literature/literature_matrix.csv`](literature/literature_matrix.csv) | Source-level evidence extraction |
 | [`docs/cad_fea_plan.md`](docs/cad_fea_plan.md) | Planned geometry and solver work |
-| [`ROADMAP.md`](ROADMAP.md) | Remaining lab inputs and milestones |
+
+## Status
+
+- **Done (literature):** 26-source literature matrix, per-source pros/cons
+  analyses, and a cross-source synthesis.
+- **Done (model):** first-order analytical thermal-bias model with a
+  sensitivity sweep; every number is a simulation output, not a measurement.
+- **Provisional (external logs):** reliability audit of two deployment-log
+  exports kept outside the repository; delivery and continuity metrics only,
+  no accuracy claims.
+- **Pending:** heat-soak, reference co-location, and CHT/FEA comparisons are
+  planned but not started; no experimental accuracy or calibration results
+  exist yet. See [`docs/cad_fea_plan.md`](docs/cad_fea_plan.md).
 
 ## Repository map
 
@@ -87,7 +99,7 @@ ProConsList/   sensor and enclosure assessment for each bibliography entry
 paper/         manuscript source and bibliography
 templates/     baseline, deployment, and calibration data templates
 deliverables/  rendered reports and summaries
-docs/          results, provenance, plans, and review notes
+docs/          results, provenance, and plans
 ```
 
 ## Contributing
