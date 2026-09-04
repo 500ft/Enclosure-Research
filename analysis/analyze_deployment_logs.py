@@ -34,6 +34,7 @@ logs alone.
 """
 
 import argparse
+import json
 import hashlib
 from pathlib import Path
 
@@ -211,29 +212,68 @@ def env_signature_section(dfs: dict, lines: list):
         "sheet Q3-5).",
     ]
 
-    # Field-deployment window: the subset that answers "was it deployed and working"
-    a = dfs["A"]
-    w = (a["timestamp"] >= "2026-04-20") & (a["timestamp"] < "2026-05-12")
-    aw = a[w]
-    dur_min = (aw["timestamp"].iloc[-1] - aw["timestamp"].iloc[0]).total_seconds() / 60
-    expected = dur_min / 6.0  # observed median cadence; intended cadence unconfirmed
+    # Field-deployment window: the subset that answers "was it deployed and working".
+    # Computed by window_metrics() so the markdown here and the committed metrics JSON
+    # are the same numbers by construction rather than by coincidence.
+    m = window_metrics(dfs)
     lines += [
         "\n## Field-deployment window (Log A, Apr 20 - May 11, provisional)",
         "",
-        f"- Records: {len(aw)}; operational: {int(aw['operational'].sum())} ({100 * aw['operational'].mean():.1f}%)",
-        f"- Brownout fraction: {100 * aw['brownout'].mean():.1f}%",
-        f"- Upload success: {100 * aw['post_ok'].mean():.1f}%",
-        f"- Median batt_v: {aw['batt_v'].median():.3f} V",
-        f"- Completeness vs 6-min cadence: {100 * len(aw) / expected:.1f}% "
+        f"- Records: {m['records']}; operational: {m['operational_records']} ({m['operational_pct']:.1f}%)",
+        f"- Brownout fraction: {m['brownout_pct']:.1f}%",
+        f"- Upload success: {m['upload_success_pct']:.1f}%",
+        f"- Median batt_v: {m['median_batt_v']:.3f} V",
+        f"- Completeness vs 6-min cadence: {m['completeness_pct']:.1f}% "
         "(cadence is the observed median, not a confirmed configuration)",
-        f"- Internal temp span: {aw.loc[aw['hum'] > 0, 'temp'].min():.1f} to {aw.loc[aw['hum'] > 0, 'temp'].max():.1f} degC",
+        f"- Internal temp span: {m['temp_min_degc']:.1f} to {m['temp_max_degc']:.1f} degC",
     ]
+
+
+WINDOW_START, WINDOW_END = "2026-04-20", "2026-05-12"   # provisional outdoor window, Log A
+OBSERVED_CADENCE_MIN = 6.0                              # observed median, not a confirmed config
+
+
+def window_metrics(dfs: dict) -> dict:
+    """Headline reliability aggregates for the provisional outdoor window.
+
+    Single source of truth: env_signature_section() renders these into the markdown
+    report and main() writes the same dict to the metrics JSON, so the report and the
+    committed numbers cannot drift apart.
+    """
+    a = dfs["A"]
+    aw = a[(a["timestamp"] >= WINDOW_START) & (a["timestamp"] < WINDOW_END)]
+    dur_min = (aw["timestamp"].iloc[-1] - aw["timestamp"].iloc[0]).total_seconds() / 60
+    expected = dur_min / OBSERVED_CADENCE_MIN
+    env_ok = aw["hum"] > 0
+    return {
+        "window_start": WINDOW_START,
+        "window_end_exclusive": WINDOW_END,
+        "window_days": round(dur_min / 1440.0, 3),
+        "records": int(len(aw)),
+        "operational_records": int(aw["operational"].sum()),
+        "operational_pct": float(100 * aw["operational"].mean()),
+        "brownout_records": int(aw["brownout"].sum()),
+        "brownout_pct": float(100 * aw["brownout"].mean()),
+        "upload_success_pct": float(100 * aw["post_ok"].mean()),
+        "median_batt_v": float(aw["batt_v"].median()),
+        "completeness_pct": float(100 * len(aw) / expected),
+        "completeness_basis": f"observed median cadence {OBSERVED_CADENCE_MIN:g} min; intended cadence unconfirmed",
+        "temp_min_degc": float(aw.loc[env_ok, "temp"].min()),
+        "temp_max_degc": float(aw.loc[env_ok, "temp"].max()),
+    }
 
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--data-dir", default=str(Path.home() / "Downloads/DataEnclosure"))
+    # No default: the raw logs are not versioned and live outside any repository, so a
+    # default path would only ever be correct on one machine.
+    p.add_argument("--data-dir", required=True,
+                   help="Directory holding the raw log exports (not versioned).")
     p.add_argument("--out-dir", default=str(Path(__file__).parent / "output"))
+    p.add_argument("--metrics-json", default=None,
+                   help="Where to write the machine-readable headline metrics. Defaults to "
+                        "<out-dir>/deployment_metrics.json. Commit this file: it makes the "
+                        "reported percentages traceable while the raw logs stay private.")
     args = p.parse_args()
     data_dir, out_dir = Path(args.data_dir), Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -366,7 +406,33 @@ def main():
     fig.savefig(out_dir / "fig4_temp_deployment_window.png")
 
     (out_dir / "results.md").write_text("\n".join(lines) + "\n")
-    print(f"Wrote {out_dir}/results.md and 4 figures.")
+
+    # Machine-readable headline metrics, anchored to the sha256 of the exact inputs.
+    # This is the artifact of record for every percentage quoted in docs/results.md and
+    # the manuscript: the raw logs stay unversioned, but the numbers become checkable
+    # and it is verifiable which files produced them.
+    metrics_path = Path(args.metrics_json) if args.metrics_json else out_dir / "deployment_metrics.json"
+    metrics = {
+        "generated_by": Path(__file__).name,
+        "evidence_type": "external field-log analysis",
+        "status": "provisional - deployment history and raw exports are maintained outside "
+                  "this repository; dates and cadence are unconfirmed",
+        "inputs": {k: {"filename": v, "sha256": sha256(data_dir / v)} for k, v in LOGS.items()},
+        "field_deployment_window": window_metrics(dfs),
+        "all_logs": {
+            k: {
+                "records": int(len(df)),
+                "brownout_records": int(df["brownout"].sum()),
+                "brownout_pct": float(100 * df["brownout"].mean()),
+                "upload_success_pct": float(100 * df["post_ok"].mean()),
+                "operational_records": int(df["operational"].sum()),
+            }
+            for k, df in dfs.items()
+        },
+    }
+    metrics_path.parent.mkdir(parents=True, exist_ok=True)
+    metrics_path.write_text(json.dumps(metrics, indent=1) + "\n")
+    print(f"Wrote {out_dir}/results.md, {metrics_path}, and 4 figures.")
 
 
 if __name__ == "__main__":

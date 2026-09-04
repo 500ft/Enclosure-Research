@@ -435,6 +435,34 @@ def print_bias_table(res: SweepResult, variants: list[Variant], wind_marks: list
     print()
 
 
+def write_bias_table(res: SweepResult, variants: list[Variant], wind_marks: list[float],
+                     out_path: str) -> None:
+    """Write the bias-vs-variant table as CSV -- the artifact of record for this model.
+
+    The figure is deliberately NOT the comparable artifact: its layout depends on text
+    extents, so a different font build shifts the axes by a few pixels and rescales the
+    y-mapping, which moves every curve. That makes a committed-vs-fresh PNG diff report
+    drift when the numbers are identical. These values are the thing to compare.
+    """
+    import csv as _csv
+    import os as _os
+
+    _os.makedirs(_os.path.dirname(out_path) or ".", exist_ok=True)
+    with open(out_path, "w", newline="") as fh:
+        w = _csv.writer(fh, lineterminator="\n")
+        w.writerow(["# SIMULATION -- pending lab co-location data; see docs/results.md"])
+        w.writerow(["g_w_m2", "wind_m_s", "variant_id", "variant_name",
+                    "delta_t_degc", "rh_err_pct"])
+        for g in res.g_values:
+            for wmark in wind_marks:
+                idx = int(np.argmin(np.abs(res.wind - wmark)))
+                for v in variants:
+                    w.writerow([f"{g:.0f}", f"{res.wind[idx]:.1f}", v.vid, v.name,
+                                f"{res.dT[v.vid][g][idx]:.4f}",
+                                f"{res.rh_err[v.vid][g][idx]:.4f}"])
+    print(f"[table] wrote {out_path}")
+
+
 def make_figure(res: SweepResult, variants: list[Variant], out_path: str) -> None:
     import matplotlib
     matplotlib.use("Agg")
@@ -590,6 +618,9 @@ def main() -> None:
     p.add_argument("--figure", default="analysis/figures/thermal_bias.png",
                    help="Output figure path (PNG). Set empty to skip.")
     p.add_argument("--no-figure", action="store_true", help="Skip figure generation")
+    p.add_argument("--table", default="analysis/output/thermal_bias_table.csv",
+                   help="Write the bias-vs-variant table here (the artifact of record; "
+                        "compare this, not the PNG). Set to '' to skip.")
     args = p.parse_args()
 
     t_sky_c = args.t_air - float(_a("T_sky_offset"))
@@ -610,6 +641,8 @@ def main() -> None:
     )
 
     print_bias_table(res, variants, args.wind_marks)
+    if args.table:
+        write_bias_table(res, variants, args.wind_marks, args.table)
     sensitivity_block(variants, args.t_air, args.rh_air, t_sky_c, h_floor, h_slope)
 
     if not args.no_figure and args.figure:
