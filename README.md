@@ -31,13 +31,20 @@ analytical model awaiting laboratory comparison.
 
 ```mermaid
 flowchart LR
-    L[Literature records] --> S[System requirements]
-    D[External deployment logs] --> R[Reliability analysis]
-    A[Model assumptions] --> T[Thermal-bias sweep]
-    S --> C[Design comparison]
+    classDef input    fill:#bbdefb,stroke:#1565c0,stroke-width:2px,color:#1f2933,font-weight:bold;
+    classDef process  fill:#b2dfdb,stroke:#00796b,stroke-width:2px,color:#1f2933;
+    classDef core     fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px,color:#1f2933,font-weight:bold;
+    classDef result   fill:#ffe0b2,stroke:#ef6c00,stroke-width:2px,color:#1f2933;
+
+    L[/Literature records/]:::input --> S[System requirements]:::process
+    D[/External deployment logs/]:::input --> R[Reliability analysis]:::process
+    A[/Model assumptions/]:::input --> T{{Thermal-bias sweep}}:::core
+    S --> C(Design comparison):::result
     R --> C
     T --> C
 ```
+
+*Shapes: parallelogram = input · rectangle = process · hexagon = core method · rounded = result.*
 
 ## Reproduce the analysis
 
