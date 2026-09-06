@@ -1,5 +1,9 @@
 # Enclosure: six-day evidence-integrity sprint
 
+## Separate CAD phase — added 2026-09-06
+
+Individual mechanical work orders now live in [CAD_PLAN.md](CAD_PLAN.md), with their own authoritative [CAD_TASKS.csv](CAD_TASKS.csv). They are additional, unexecuted work outside this original 30-hour integrity sprint. Existing physical-readiness and publication gates remain open until their actual evidence arrives.
+
 Prepared 2026-09-05. Mode: plan and execute. Budget: 30 focused hours in six
 workload days; these are not promises of unattended work or lab turnaround.
 Status is authoritative only in [SPRINT_TASKS.csv](SPRINT_TASKS.csv).

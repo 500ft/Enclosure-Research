@@ -1,5 +1,9 @@
 # CAD and FEA Design/Analysis Workstream Plan
 
+Reference correction (2026-09-06): `templates/ruggedization_test_matrix.md` is referenced below but is not present in this checkout. Those validation hooks remain proposed, not available test procedures. EN-CAD-01 in the CAD ledger explicitly prepares the inspection-to-interface requirements before CAD release.
+
+Individual CAD implementation tasks and estimates are now in [CAD_PLAN.md](CAD_PLAN.md) and [CAD_TASKS.csv](CAD_TASKS.csv). This workstream remains a broader analysis plan, not a second status ledger. The CAD comparison explicitly adds a same-geometry painted V0 control: changing finish must not be attributed to shield geometry. Optional V2 and later solver/physical work retain their own gates.
+
 This document plans the computer-aided design (CAD) and finite-element analysis (FEA) work for the sensor-box study. Its purpose is to turn the qualitative enclosure lessons in the literature synthesis into modeled, comparable predictions that feed the paper's decision framework for future lab sensor-box designs.
 
 **Status:** plan only. Nothing in this document is a result. Every temperature, airflow, stress, and frequency value referenced here is a future simulation output, not a measured quantity. Simulation outputs are treated as predictions to be checked against lab and co-location data before they are reported as findings.
