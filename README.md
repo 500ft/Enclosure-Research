@@ -1,7 +1,5 @@
 # Enclosure Research
 
-CAD development is now broken into [individual work orders](docs/CAD_PLAN.md) and a [CAD task ledger](docs/CAD_TASKS.csv). These are planned models, fixtures and release drawings—not completed CAD or hardware evidence.
-
 **A research toolkit for evaluating low-cost outdoor sensor boxes across
 sensing, enclosure, power, firmware, calibration, and field reliability.**
 
