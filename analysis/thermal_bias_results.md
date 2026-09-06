@@ -37,7 +37,13 @@ convection field and giving a spatial sensor temperature (see
 `analysis/cad_fea/`); it is not needed to establish the bias ranking or
 magnitude.
 
-## 2. Bias-vs-variant table (headline deliverable)
+## 2. Bias-vs-variant table (analytical system comparison)
+
+The painted baseline in Section 4 is a primary control, not an optional
+footnote: at 1000 W/m² and 0.5 m/s the predicted rises are 19.4°C dark box,
+4.5°C painted box, and 3.0°C shield. The incremental system advantage relative
+to the painted box is approximately 1.5°C. Differences in coupled heat load,
+geometry, and convection prevent attributing this entire difference to shielding.
 
 Ambient case: `T_air = 30 degC`, `RH_true = 50 %`, clear-sky `T_sky = 10 degC`
 (20 K depression). `dT` in degC (sensor rise above true ambient); `RH_err` in
@@ -129,9 +135,10 @@ One-at-a-time perturbations at G = 1000 W/m^2, wind = 0.5 m/s (`dT` in degC):
 
 Takeaways: V0 bias is driven hardest by **surface optical properties** -- solar
 absorptance and IR emissivity -- not by internal load. Painting the baseline
-white (alpha 0.90 -> 0.30) alone cuts V0 from ~19 to ~4.5 degC. V1 is robust:
-none of the shield-detail uncertainties move it more than ~1.5 degC, so the
-shield's benefit does not hinge on a fragile assumption.
+white (alpha 0.90 -> 0.30) alone cuts V0 from ~19 to ~4.5 degC. The listed
+one-at-a-time shield perturbations move V1 by at most ~1.5 degC. That is
+comparable to the incremental advantage over the painted control; it does not
+establish robustness to joint uncertainty or measured manufacturing variation.
 
 ## 5. RH-error mapping
 

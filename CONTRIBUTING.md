@@ -40,11 +40,18 @@ report.
 
 ```bash
 python -m compileall -q analysis
+python -m unittest discover -s analysis/tests -v
 python analysis/check_literature_coverage.py
 python analysis/thermal_bias.py --no-figure
 ```
 
 ## Pull requests
+
+Reliability changes must retain unique-slot denominator, missing-channel, clock,
+duplicate, and CLI regression coverage. See [metric definitions](docs/RELIABILITY_METRICS.md).
+Do not silently recompute published field percentages without authorized raw logs
+and confirmed deployment metadata. Store a corrected campaign in a new versioned
+output directory and reconcile the old/new estimator explicitly.
 
 State which source, dataset, model, or deliverable changed; list the commands
 used to regenerate outputs; and identify any lab measurements still needed.

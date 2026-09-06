@@ -22,6 +22,17 @@ These values describe delivery and continuity, not measurement accuracy. A
 reference co-location dataset is still required for accuracy and calibration
 claims.
 
+**Accounting correction, 2026-09-05:** the numbers above are historical,
+reported-but-unverified outputs retained for traceability. The former estimator
+counted rows over an observed span and unconfirmed six-minute cadence; duplicate
+rows and missing edge intervals could inflate completeness. The revised code
+requires an explicit intended schedule and counts unique occupied slots. No
+revised field percentage has been computed without the private exports and
+confirmed provenance. Upload success is a fraction of received records, not
+end-to-end delivery probability or wall-clock uptime. See
+[metric definitions](RELIABILITY_METRICS.md) and the
+[prepared provenance request](DEPLOYMENT_PROVENANCE_REQUEST.md).
+
 | Deployment window | Battery voltage by record outcome |
 | --- | --- |
 | ![Internal temperature and provisional deployment window](../analysis/figures/deployment_temp_window.png) | ![Battery voltage distributions](../analysis/figures/deployment_battv_outcome.png) |
@@ -34,6 +45,22 @@ not included, so another user cannot independently regenerate these field plots
 without obtaining the source exports.
 
 ## Thermal-bias model
+
+The primary comparison includes the inexpensive painted-box control. At
+`G = 1000 W/m²`, `wind = 0.5 m/s`:
+
+| Analytical variant | Predicted rise |
+|---|---:|
+| Dark baseline box | 19.4°C |
+| Same modeled box painted white (absorptance 0.90 → 0.30) | 4.5°C |
+| Passive shield | 3.0°C |
+
+Thus about 1.5°C of modeled benefit remains relative to the painted baseline,
+not the 16.4°C dark-box contrast. The shield also changes geometry, internal
+heat coupling, and convection, so this is a system comparison rather than an
+isolated shielding effect. Use matched finish and explicit heat-load controls
+in the proposed physical comparison. No model parameters or frozen outputs
+were changed to produce these already-existing sensitivity results.
 
 At `G = 1000 W/m²` and wind speeds from `0–5 m/s`, the lumped steady-state model
 predicts:

@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Reproducible reliability audit of the two sensor-box deployment logs.
 
-Regenerates every number and figure cited in PI_MEMO.md from the raw CSVs.
+Produces row-outcome summaries and plots from external CSVs. The 2026-09-05
+scheduled-accounting correction intentionally does not reproduce the historical
+observed-span completeness estimator; reconcile old/new outputs with provenance.
 
 Usage:
     python3 analyze_deployment_logs.py [--data-dir DIR] [--out-dir DIR]
@@ -36,6 +38,7 @@ logs alone.
 import argparse
 import json
 import hashlib
+import math
 from pathlib import Path
 
 import matplotlib
@@ -43,6 +46,11 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
+
+if __package__:
+    from .compute_metrics import normalize_clock, parse_timestamp, scheduled_slots
+else:
+    from compute_metrics import normalize_clock, parse_timestamp, scheduled_slots
 
 # Validated categorical palette (dataviz reference instance, light mode)
 BLUE = "#2a78d6"   # Log A / successful posts
@@ -64,7 +72,16 @@ def sha256(path: Path) -> str:
 
 def load(path: Path) -> pd.DataFrame:
     df = pd.read_csv(path)
+    required = {"timestamp", "reset_reason", "last_post_ok", "hum", "temp", "batt_temp",
+                "batt_v", "batt_soc", "csq_rssi"}
+    missing = required.difference(df.columns)
+    if missing:
+        raise ValueError(f"{path.name}: missing required columns: {', '.join(sorted(missing))}")
+    if df.empty:
+        raise ValueError(f"{path.name}: no received records; full descriptive plot campaign requires nonempty logs")
     df["timestamp"] = pd.to_datetime(df["timestamp"])
+    if df["timestamp"].isna().any():
+        raise ValueError(f"{path.name}: missing timestamp; do not silently discard delivery provenance")
     df["brownout"] = df["reset_reason"] == "BROWNOUT"
     df["post_ok"] = df["last_post_ok"] == 1
     df["qc_env_bad"] = df["hum"] == 0
@@ -168,7 +185,7 @@ def regime_section(df: pd.DataFrame, lines: list):
             )
 
 
-def env_signature_section(dfs: dict, lines: list):
+def env_signature_section(dfs: dict, lines: list, schedule: dict | None = None):
     """Provisional indoor/outdoor classification from the internal T/RH signature.
 
     Rationale: an outdoor box in NYC shows a large daily temperature swing and
@@ -215,51 +232,85 @@ def env_signature_section(dfs: dict, lines: list):
     # Field-deployment window: the subset that answers "was it deployed and working".
     # Computed by window_metrics() so the markdown here and the committed metrics JSON
     # are the same numbers by construction rather than by coincidence.
-    m = window_metrics(dfs)
+    m = window_metrics(dfs, **(schedule or {}))
+    def display(value, digits=1):
+        return "unavailable" if value is None else f"{value:.{digits}f}"
     lines += [
-        "\n## Field-deployment window (Log A, Apr 20 - May 11, provisional)",
+        f"\n## Selected Log A window ({m['window_start']} to {m['window_end_exclusive']}, end exclusive)",
         "",
-        f"- Records: {m['records']}; operational: {m['operational_records']} ({m['operational_pct']:.1f}%)",
-        f"- Brownout fraction: {m['brownout_pct']:.1f}%",
-        f"- Upload success: {m['upload_success_pct']:.1f}%",
-        f"- Median batt_v: {m['median_batt_v']:.3f} V",
-        f"- Completeness vs 6-min cadence: {m['completeness_pct']:.1f}% "
-        "(cadence is the observed median, not a confirmed configuration)",
-        f"- Internal temp span: {m['temp_min_degc']:.1f} to {m['temp_max_degc']:.1f} degC",
+        f"- Records: {m['records']}; operational: {m['operational_records']} ({display(m['operational_pct'])}%)",
+        f"- Brownout fraction of received records: {display(m['brownout_pct'])}%",
+        f"- Upload success fraction of received records: {display(m['upload_success_pct'])}%",
+        f"- Median batt_v: {display(m['median_batt_v'], 3)} V",
+        f"- Scheduled delivery availability: {display(m['completeness_pct'])}%; {m['completeness_basis']}",
+        f"- Valid-environment availability: {display(m['valid_environment_availability_pct'])}%",
+        "- Reference-paired availability: unavailable (these logs have no reference channel)",
+        f"- Internal temp span: {display(m['temp_min_degc'])} to {display(m['temp_max_degc'])} degC",
     ]
 
 
 WINDOW_START, WINDOW_END = "2026-04-20", "2026-05-12"   # provisional outdoor window, Log A
-OBSERVED_CADENCE_MIN = 6.0                              # observed median, not a confirmed config
+def window_metrics(
+    dfs: dict, *, window_start: str | None = None, window_end: str | None = None,
+    expected_interval_minutes: float | None = None, slot_tolerance_seconds: float = 0,
+) -> dict:
+    """Observed-row summaries and, only with a supplied schedule, availability.
 
-
-def window_metrics(dfs: dict) -> dict:
-    """Headline reliability aggregates for the provisional outdoor window.
-
-    Single source of truth: env_signature_section() renders these into the markdown
-    report and main() writes the same dict to the metrics JSON, so the report and the
-    committed numbers cannot drift apart.
+    No schedule means unavailable completeness, not a guess from the observed
+    six-minute median. This changes the estimator; historical published outputs
+    must be reconciled in a new run with authorized raw data, never overwritten
+    merely because this implementation changed.
     """
-    a = dfs["A"]
-    aw = a[(a["timestamp"] >= WINDOW_START) & (a["timestamp"] < WINDOW_END)]
-    dur_min = (aw["timestamp"].iloc[-1] - aw["timestamp"].iloc[0]).total_seconds() / 60
-    expected = dur_min / OBSERVED_CADENCE_MIN
-    env_ok = aw["hum"] > 0
+    if expected_interval_minutes is not None and (window_start is None or window_end is None):
+        raise ValueError("intended window start and end are required with expected interval")
+    if (window_start is None) != (window_end is None):
+        raise ValueError("supply both window boundaries")
+    if expected_interval_minutes is None and slot_tolerance_seconds != 0:
+        raise ValueError("slot tolerance requires an expected interval")
+    start = normalize_clock(parse_timestamp(window_start or WINDOW_START))
+    end = normalize_clock(parse_timestamp(window_end or WINDOW_END))
+    a = dfs["A"].copy()
+    times = [normalize_clock(t.to_pydatetime() if isinstance(t, pd.Timestamp) else t)
+             for t in a["timestamp"]]
+    if any((t.utcoffset() is not None) != (start.utcoffset() is not None) for t in [end, *times]):
+        raise ValueError("timezone convention must agree for timestamps and window")
+    if end <= start:
+        raise ValueError("window end must be after window start")
+    inside = [start <= t < end for t in times]
+    aw = a.loc[inside].copy()
+    finite = lambda value: pd.notna(value) and math.isfinite(float(value))
+    env_ok = aw["temp"].map(finite) & aw["hum"].map(finite) & (aw["hum"] > 0) & (aw["hum"] <= 100)
+    expected = delivered = valid_slots = duplicates = off_grid = None
+    if expected_interval_minutes is not None:
+        expected, all_slots, _ = scheduled_slots(times, start, end, expected_interval_minutes, slot_tolerance_seconds)
+        slots = [slot for slot, in_window in zip(all_slots, inside) if in_window]
+        delivered = len({slot for slot in slots if slot is not None})
+        valid_slots = len({slot for slot, valid in zip(slots, env_ok) if slot is not None and valid})
+        duplicates = sum(slot is not None for slot in slots) - delivered
+        off_grid = sum(slot is None for slot in slots)
+    def available(value):
+        return float(value) if pd.notna(value) and math.isfinite(float(value)) else None
     return {
-        "window_start": WINDOW_START,
-        "window_end_exclusive": WINDOW_END,
-        "window_days": round(dur_min / 1440.0, 3),
+        "window_start": start.isoformat(),
+        "window_end_exclusive": end.isoformat(),
+        "window_days": (end - start).total_seconds() / 86400,
         "records": int(len(aw)),
         "operational_records": int(aw["operational"].sum()),
-        "operational_pct": float(100 * aw["operational"].mean()),
+        "operational_pct": available(100 * aw["operational"].mean()),
         "brownout_records": int(aw["brownout"].sum()),
-        "brownout_pct": float(100 * aw["brownout"].mean()),
-        "upload_success_pct": float(100 * aw["post_ok"].mean()),
-        "median_batt_v": float(aw["batt_v"].median()),
-        "completeness_pct": float(100 * len(aw) / expected),
-        "completeness_basis": f"observed median cadence {OBSERVED_CADENCE_MIN:g} min; intended cadence unconfirmed",
-        "temp_min_degc": float(aw.loc[env_ok, "temp"].min()),
-        "temp_max_degc": float(aw.loc[env_ok, "temp"].max()),
+        "brownout_pct": available(100 * aw["brownout"].mean()),
+        "upload_success_pct": available(100 * aw["post_ok"].mean()),
+        "median_batt_v": available(aw["batt_v"].median()),
+        "expected_slots": expected,
+        "delivered_slots": delivered,
+        "completeness_pct": 100 * delivered / expected if expected is not None else None,
+        "valid_environment_availability_pct": 100 * valid_slots / expected if expected is not None else None,
+        "reference_paired_availability_pct": None,
+        "duplicate_slot_records": duplicates,
+        "off_grid_records": off_grid,
+        "completeness_basis": f"unique slots; supplied intended cadence {expected_interval_minutes:g} min; tolerance {slot_tolerance_seconds:g} s; metadata confirmation remains caller responsibility" if expected is not None else "unavailable: intended window/cadence not supplied; historical observed-span estimates are not recomputed",
+        "temp_min_degc": available(aw.loc[env_ok, "temp"].min()),
+        "temp_max_degc": available(aw.loc[env_ok, "temp"].max()),
     }
 
 
@@ -274,11 +325,32 @@ def main():
                    help="Where to write the machine-readable headline metrics. Defaults to "
                         "<out-dir>/deployment_metrics.json. Commit this file: it makes the "
                         "reported percentages traceable while the raw logs stay private.")
+    p.add_argument("--window-start", help="Intended Log A sampling start; supply with end/cadence")
+    p.add_argument("--window-end", help="Intended exclusive Log A end; ISO-8601")
+    p.add_argument("--expected-interval-minutes", type=float)
+    p.add_argument("--slot-tolerance-seconds", type=float, default=0)
     args = p.parse_args()
+    schedule = {"window_start": args.window_start, "window_end": args.window_end,
+                "expected_interval_minutes": args.expected_interval_minutes,
+                "slot_tolerance_seconds": args.slot_tolerance_seconds}
+    supplied = [args.window_start is not None, args.window_end is not None, args.expected_interval_minutes is not None]
+    if any(supplied) and not all(supplied):
+        p.error("supply window-start, window-end, and expected-interval-minutes together")
+    if all(supplied):
+        try:
+            scheduled_slots([], parse_timestamp(args.window_start), parse_timestamp(args.window_end),
+                            args.expected_interval_minutes, args.slot_tolerance_seconds)
+        except ValueError as exc:
+            p.error(str(exc))
+    elif args.slot_tolerance_seconds != 0:
+        p.error("slot tolerance requires an intended schedule")
     data_dir, out_dir = Path(args.data_dir), Path(args.out_dir)
+    try:
+        dfs = {k: load(data_dir / v) for k, v in LOGS.items()}
+        window_metrics(dfs, **schedule)  # validate clock/schedule before emitting outputs
+    except (OSError, ValueError) as exc:
+        p.error(str(exc))
     out_dir.mkdir(parents=True, exist_ok=True)
-
-    dfs = {k: load(data_dir / v) for k, v in LOGS.items()}
     lines = [
         "# Deployment-log reliability audit (auto-generated)",
         "",
@@ -294,7 +366,7 @@ def main():
     for k, df in dfs.items():
         per_log_section(k, df, lines)
     regime_section(dfs["A"], lines)
-    env_signature_section(dfs, lines)
+    env_signature_section(dfs, lines, schedule)
 
     # Export operational subsets beside the raw data (NOT into any repository)
     derived = data_dir / "derived"
@@ -305,11 +377,11 @@ def main():
         df[df["operational"]].drop(columns=helper_cols).to_csv(out, index=False)
         lines.append(f"\nOperational subset of Log {k} exported to `{out}` ({int(df['operational'].sum())} rows).")
     dep = dfs["A"]
-    depm = dep["operational"] & (dep["timestamp"] >= "2026-04-20") & (dep["timestamp"] < "2026-05-12")
+    depm = dep["operational"] & (dep["timestamp"] >= (args.window_start or WINDOW_START)) & (dep["timestamp"] < (args.window_end or WINDOW_END))
     dep_out = derived / "logA_deployed.csv"
     dep[depm].drop(columns=helper_cols).to_csv(dep_out, index=False)
     lines.append(
-        f"\nField-deployment subset (operational AND inside the provisional outdoor window) "
+        f"\nSelected-window subset (operational AND inside the Log A analysis window) "
         f"exported to `{dep_out}` ({int(depm.sum())} rows)."
     )
 
@@ -418,7 +490,7 @@ def main():
         "status": "provisional - deployment history and raw exports are maintained outside "
                   "this repository; dates and cadence are unconfirmed",
         "inputs": {k: {"filename": v, "sha256": sha256(data_dir / v)} for k, v in LOGS.items()},
-        "field_deployment_window": window_metrics(dfs),
+        "field_deployment_window": window_metrics(dfs, **schedule),
         "all_logs": {
             k: {
                 "records": int(len(df)),
