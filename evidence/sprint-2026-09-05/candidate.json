@@ -1,0 +1,13 @@
+{
+  "recorded_date": "2026-09-06",
+  "base_commit": "c8c941dabd02541b3f3bfd67dc0edbc0517e6be9",
+  "branch": "sprint/evidence-integrity-20260905",
+  "candidate_status": "uncommitted source snapshot; not a release",
+  "selection_status": "recorded before additional deterministic metamorphic-case outputs",
+  "sha256": {
+    "analysis/compute_metrics.py": "e9f780cb332a5dffe748c426665de679bb1af8b0c137229aa81ed0ad80ab26c9",
+    "analysis/analyze_deployment_logs.py": "7b22eaaecd49f8ff229bccd40a9d1da4676efb381f0066c3db56f82e93717a1b",
+    "evidence/sprint-2026-09-05/consumer.csv": "8d1d6a22d16c6b92a615d2c325194918db13ef156b0e788d70194c9e46c5480c",
+    ".github/workflows/ci.yml": "269bceec877bf6cd95b82d5e1eecde70a6222da494c5b577c6faa3b43d136155"
+  }
+}
