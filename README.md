@@ -29,6 +29,13 @@ The current field-log summary is provisional because deployment history and raw
 exports are maintained outside the repository. The thermal study is an
 analytical model awaiting laboratory comparison.
 
+The cheapest comparison matters: at 1000 W/m² and 0.5 m/s the model predicts
+19.4°C rise for the dark baseline, 4.5°C for that baseline painted white, and
+3.0°C for the passive shield. The latter's incremental modeled advantage over
+the painted box is about 1.5°C; the variants also differ in heat coupling and
+convection assumptions. This does not isolate a measured shielding effect.
+See [the sensitivity calculation](analysis/thermal_bias_results.md#4-sensitivity-which-uncertain-input-dominates).
+
 ```mermaid
 flowchart LR
     classDef input    fill:#bbdefb,stroke:#1565c0,stroke-width:2px,color:#1f2933,font-weight:bold;
@@ -56,6 +63,7 @@ python -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 python analysis/check_literature_coverage.py
+python -m unittest discover -s analysis/tests -v
 python analysis/thermal_bias.py
 ```
 
@@ -71,6 +79,12 @@ The input directory must contain `data1.3_24 - Sheet1.csv` and
 `data2_5_29 - Sheet1.csv`. Those raw files are not committed. The script writes
 an audit report, four plots, and filtered subsets; see
 [`docs/data-and-figures.md`](docs/data-and-figures.md) before interpreting them.
+
+New reliability runs report scheduled completeness only when intended window,
+cadence, and matching tolerance are supplied. Without them it is unavailable;
+the historical 91.4% is not silently recalculated. The standalone metrics CLI
+and channel-specific availability definitions are in
+[`docs/RELIABILITY_METRICS.md`](docs/RELIABILITY_METRICS.md).
 
 ## Documentation
 

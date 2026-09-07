@@ -6,7 +6,7 @@
 
 ## Abstract
 
-Low-cost outdoor sensor boxes can increase the spatial and temporal resolution of environmental measurements, but their usefulness depends on more than the nominal accuracy of individual sensors. Once sensors are integrated into an enclosure, their measurements can be affected by calibration error, solar heating, internal electronics heat, airflow restriction, water ingress, dust, sensor aging, power limitations, firmware reliability, and data loss. This paper evaluates the lab's existing low-cost outdoor multi-sensor box as a deployed system rather than as a single enclosure component. The study measures raw sensor accuracy against reference instruments with documented uncertainty, quantifies improvement after simple calibration, tracks autonomy and data completeness during field operation, and identifies which design factors most limit performance, following the collocation durations and evaluation metrics recommended by published air-sensor performance protocols. A first-order thermal model predicts the solar self-heating bias of the enclosure variants in advance, and the co-location data are used to test those predictions. Preliminary reliability results from the box's first deployment logs are now included: across a provisional 22-day unattended outdoor window the box recorded zero brownout resets with 95.7% upload success and 91.4% data completeness, while all observed power failures — in two distinct modes — were confined to indoor bench phases; accuracy and calibration results await reference co-location. The expected output is a practical, evidence-weighted decision framework — with criterion weights set by the measured dominant error and failure sources rather than assumed in advance — that helps the lab choose future materials, geometries, sensor layouts, and maintenance schedules based on accuracy, reliability, autonomy, manufacturability, and weather resistance.
+Low-cost outdoor sensor boxes can increase the spatial and temporal resolution of environmental measurements, but enclosure heating, sensor calibration, power, firmware, and data loss affect the deployed system. This work currently provides a literature synthesis, a first-order thermal model, and provisional analysis of external deployment-log exports. Reference co-location, calibration, and physical thermal comparisons are planned, not completed. At 1000 W/m² and 0.5 m/s the model predicts temperature rises of 19.4°C for a dark baseline, 4.5°C for that box painted white, and 3.0°C for the passive shield; the whole-system variants also change heat coupling and convection, so the contrast does not isolate shielding. Historical log summaries reported no brownout-coded records, 95.7% successful-post records, and 91.4% observed-span completeness in an inferred 22-day outdoor window. These rates and the indoor/outdoor classification remain unverified here because the source exports and intended deployment configuration are external. The historical completeness estimator counted rows against an observed-span denominator; revised software instead requires an explicit intended schedule and counts unique occupied slots. No revised field percentage or wall-clock uptime claim is made. The proposed next study compares matched-finish configurations against a documented reference and reconciles reliability denominators using confirmed deployment metadata.
 
 ## 1. Introduction
 
@@ -259,29 +259,36 @@ Report raw bias, MAE, RMSE, correlation, and drift for each sensor channel. Incl
 
 ### 5.3 Autonomy and data completeness (preliminary, field window)
 
+**2026-09-05 interpretation correction:** the following numeric values are
+historical reports, not newly verified observations. Raw exports, intended
+cadence/window, maintenance history, and clock provenance are not available in
+this checkout. The corrected unique-slot estimator has not been run on those
+private exports. In particular, absence of a recorded event during available
+rows does not establish continuous uptime or an unattended deployment.
+
 Runtime and data loss are reported as engineering results, not secondary notes. Values are for the provisional field-deployment window of Log A (Apr 20 – May 11); the bracketing indoor phases are excluded here and analyzed as failure modes in Section 5.4.
 
 | Metric | Value | Interpretation |
 |---|---|---|
-| Deployment length | 22 days (Apr 20 – May 11, provisional window) | Calendar duration outdoors |
-| Runtime before intervention | ≥ 22 days, unattended | No brownout reset and no maintenance signature within the window |
-| Uptime | 100% of the window's records are operational (4,735 of 4,736) | No brownout resets occurred outdoors |
+| Selected window length | 22 days (Apr 20 – May 11, provisional window) | Outdoor placement dates require confirmation |
+| Runtime before intervention | Not established | Maintenance history and missing intervals require confirmation |
+| Operational received records | 4,735 of 4,736 (historically rounded to 100%) | Received-record fraction, not wall-clock uptime |
 | Data completeness | 91.4% vs the observed 6-min cadence | Configured cadence unconfirmed; completeness is relative to observed median interval |
 | Upload success | 95.7% of records | Cellular HTTP POST |
-| Battery low-voltage events | 0 in window (median 3.941 V) | Solar charging sustained the single-cell Li-ion |
+| Battery low-voltage events | 0 reported in window (median 3.941 V) | Available records do not establish power balance or solar contribution |
 | Sensor dropout events | 1 record with invalid environmental read | Isolated |
-| Maintenance events | 0 within window | Deployment ended at a 414-h recording gap whose cause is unconfirmed |
-| Internal temperature span | 4.1 to 31.7 °C | Environmental exposure achieved without electrical failure |
+| Maintenance events | No reported maintenance signature within window | Actual interventions and cause of subsequent 414-h gap are unconfirmed |
+| Internal temperature span | 4.1 to 31.7 °C | Internal readings; not a reference-validated environmental measurement |
 
-The headline autonomy result: **zero brownout resets during the entire 22-day outdoor deployment, at 95.7% upload success and 91.4% completeness**. For context, all 4,079 brownout resets across both logs occurred during indoor-signature (bench) phases. Reporting completeness and yield as results of record follows the field-deployment literature [@szewczyk2004; @feinberg2018]; the sharp bench-versus-field behavioral split echoes the deployment-practice warning that lab conditions do not predict field conditions — in this case, in the unexpected direction [@barrenetxea2008].
+The historical summaries report no brownout-coded records in the selected window, 95.7% successful-post records, and 91.4% completeness under the former observed-span estimator. They also report 4,079 brownout-coded records in indoor-signature phases. Reset-event uniqueness and physical location require provenance checks. These descriptions do not establish continuous autonomy or outdoor safety. Reporting completeness and yield remains important [@szewczyk2004; @feinberg2018], but configured expected slots and available-record outcomes must be kept distinct. The proposed bench-versus-field explanation remains provisional [@barrenetxea2008].
 
 ### 5.4 Failure modes (preliminary)
 
 Observed failures, coded by the taxonomy below:
 
-- **Power failure — two distinct brownout modes, both on the bench.** The commissioning phase (Mar 26 – Apr 4) shows 99.8% brownout resets at healthy battery voltages (31.5% of Log A's brownout records occur at ≥ 3.8 V — voltages that later sustained 22 flawless days outdoors), consistent with a load-transient/regulator interaction or a bench power-setup difference rather than depletion. The terminal phase (May 28 – Jun 4) shows brownouts at a median 3.53 V — classic depletion. These modes imply different fixes; field data alone would have revealed neither, since the field window contains no brownouts at all.
-- **Firmware/data failure — upload failure is power-coupled, not connectivity-coupled.** Zero of 4,079 brownout records produced a successful upload, while median cellular signal quality is indistinguishable between failed and successful records (RSSI 17 vs 16 in Log A; 18 vs 18 in Log B). The radio link is exonerated.
-- **Firmware/data failure — brownout resets corrupt the environmental read.** 1,501 of Log A's 1,511 zero-humidity records occur on brownout records; environmental channels from brownout-recovery records are excluded from any environmental summary.
+- **Power-failure hypotheses — two voltage regimes in indoor-signature phases.** The historical commissioning summary (Mar 26 – Apr 4) reports 99.8% brownout-coded records and 31.5% of Log A's brownout records at ≥ 3.8 V. The terminal summary (May 28 – Jun 4) reports a median 3.53 V on brownout records. Load transients, regulator behavior, setup differences, and depletion are candidate explanations; these logs alone do not identify them or prove physical location.
+- **Upload outcome association, not exclusion of connectivity faults.** The summaries report zero successful uploads among 4,079 brownout-coded records, with signal-quality medians of 17 versus 16 in Log A and 18 versus 18 in Log B. Similar medians cannot exonerate the radio link or establish causal ordering between reset and upload failure.
+- **Invalid environmental readings co-occur with brownout state.** The summaries report 1,501 of Log A's 1,511 zero-humidity records on brownout-coded rows. This association does not prove resets caused corruption. The existing script excludes zero-humidity rows from environmental summaries; reliability-row outcomes retain them.
 - **Instrumentation gap — battery temperature unrecorded.** The fuel-gauge temperature channel reports a −42 sentinel on every record, removing battery temperature from the analyzable variable set.
 - Calibration, enclosure (water ingress, heat buildup), and maintenance failure classes: no observable evidence either way in these logs — assessment requires the reference co-location and a documented deployment protocol.
 

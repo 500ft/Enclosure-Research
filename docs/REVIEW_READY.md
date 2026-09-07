@@ -1,0 +1,90 @@
+# Enclosure software review packet — partial field-validation handoff
+
+Prepared 2026-09-06; sprint began 2026-09-05. Repository:
+`/Users/redhose/Developer/research-sprints/2026-09-05/Enclosure-Research`, remote
+`https://github.com/500ft/Enclosure-Research.git`.
+Base `c8c941dabd02541b3f3bfd67dc0edbc0517e6be9`; branch
+`sprint/evidence-integrity-20260905`. Final commit: this packet's containing
+commit (reported in the PR; not self-embedded).
+Source identity: [candidate SHA-256 manifest](../evidence/sprint-2026-09-05/candidate.json).
+This is source-distributed CLI work, not a published package or deployment.
+
+## Plan and evidence
+
+- [Six-day / 30-hour roadmap](SPRINT_ROADMAP.md)
+- [Authoritative task ledger](SPRINT_TASKS.csv)
+- [Progress and exact next command](SPRINT_PROGRESS.md)
+- [Baseline, runtime, and complete 150% reproduction](../evidence/sprint-2026-09-05/baseline.md)
+- [Test-first red/green evidence](../evidence/sprint-2026-09-05/regressions.md)
+- [Final commands, statuses, and retained outputs](../evidence/sprint-2026-09-05/final-checks.md)
+- [Actual external-working-directory consumer CLI proof](../evidence/sprint-2026-09-05/consumer-output.md)
+
+## Must-have acceptance evidence
+
+| Deliverable | Evidence | Boundary |
+|---|---|---|
+| Unique schedule accounting; explicit edges/cadence; duplicate/off-grid diagnostics | [metric tests](../analysis/tests/test_compute_metrics.py), [contract](RELIABILITY_METRICS.md) | Software checks do not confirm deployment intent |
+| Separate delivery/sensor/pair availability and unchanged paired-row residual meaning | [consumer output](../evidence/sprint-2026-09-05/consumer-output.md) | Availability is unique slots; accuracy is paired observations; neither is uptime |
+| Unavailable completeness without provenance; empty selected windows; clear missing-source errors | [deployment tests](../analysis/tests/test_deployment_metrics.py), [CLI tests](../analysis/tests/test_metrics_cli.py) | Whole empty plot-source logs explicitly rejected; no private replay |
+| Painted control and corrected evidence narrative | [results](results.md), [sensitivity](../analysis/thermal_bias_results.md), [manuscript](../paper/manuscript_v1.md) | 19.4/4.5/3.0°C analytical; legacy rendered reports not regenerated |
+| Behavioral tests in actual workflow | [CI](../.github/workflows/ci.yml), [local results](../evidence/sprint-2026-09-05/final-checks.md) | No remote Actions run claimed |
+
+Intentional API changes: cadence-only compute_metrics calls now require intended
+start/end or raise ValueError; CLI invalid/incomplete schedules exit 2. read_rows
+retains timestamped records missing a channel. Generic completeness aliases
+paired availability; exporter completeness_pct means delivery availability.
+Definitions, missing-data states, and timestamp matching are in
+[RELIABILITY_METRICS.md](RELIABILITY_METRICS.md).
+
+## Reproduce
+
+The primary agent independently reran the delegated software checks on2026-09-06:
+[actual rerun record](../evidence/sprint-2026-09-05/parent-verification.json).
+This is additional software verification, not independent human or physical validation.
+
+From checkout root with Python 3.11 and requirements installed:
+
+```bash
+python -m compileall -q analysis
+python -m unittest discover -s analysis/tests -v
+python analysis/check_literature_coverage.py
+python analysis/thermal_bias.py --no-figure
+python evidence/sprint-2026-09-05/evaluate_candidate.py
+git diff --check
+```
+
+Observed: 24 tests pass; bibliography 26/26; thermal runs; four candidate hashes
+match; 12/12 additional developer cases pass. No configured type/lint command.
+Complete historical field reproduction is not possible from this clone alone.
+
+## Evaluation and pending feedback
+
+[Selection/original expectations](../evidence/sprint-2026-09-05/evaluation-procedure.md)
+preceded [additional outputs](../evidence/sprint-2026-09-05/evaluation.md). No
+disagreements occurred. Same-developer deterministic cases are not an independent
+scientific evaluation; hashes establish identity only. Human feedback is pending.
+No physical experiment, private import, or corrected publication package occurred.
+
+## Incomplete work / three remaining priorities
+
+1. EN-S02/09B: confirmed window, cadence, timezone, device/reset semantics, and
+   authorized logs; reconcile historical 91.4% in a new versioned campaign.
+   [Prepared, unsent owner request](DEPLOYMENT_PROVENANCE_REQUEST.md).
+2. Physical baseline/reference co-location: measure matched-finish controls and
+   uncertainty before claiming a hardware shielding advantage.
+3. EN-S11: independent human/source review, then deliberately regenerate any
+   corrected rendered publication package and decide commit/PR disposition.
+
+Evidence-supported project bullet: “Built and regression-tested schedule-aware
+sensor-log analysis that separates delivery, valid sensing, and reference-paired
+availability while preventing duplicate-row inflation.” This states engineering
+quality, not adoption or measured field performance.
+
+Review Enclosure-Research against docs/SPRINT_ROADMAP.md. Repository:
+/Users/redhose/Developer/research-sprints/2026-09-05/Enclosure-Research. Base commit:
+c8c941dabd02541b3f3bfd67dc0edbc0517e6be9. Final commit: PR head (see GitHub PR). Review index:
+docs/REVIEW_READY.md. Incomplete work: confirmed deployment metadata and authorized
+field rerun, physical reference comparison, independent human review, publication
+package regeneration. Reproduce the changed behaviors and counterexamples, rerun
+appropriate checks, and assess the code and evidence independently. Review first;
+make further changes only if requested.

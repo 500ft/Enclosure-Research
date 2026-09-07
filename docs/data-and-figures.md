@@ -40,8 +40,8 @@ Required external files:
 - `data1.3_24 - Sheet1.csv` (Log A)
 - `data2_5_29 - Sheet1.csv` (Log B)
 
-The script defaults to `~/Downloads/DataEnclosure`, but an explicit path is
-recommended:
+The script requires an explicit data directory; it has no machine-specific
+default. The path below is a placeholder for authorized external exports:
 
 ```bash
 python analysis/analyze_deployment_logs.py \
@@ -54,6 +54,12 @@ row, treats `last_post_ok == 1` as a successful post, replaces battery
 temperature sentinels at or below −40, and flags `hum == 0` environmental rows.
 An operational row requires `DEEPSLEEP_WAKE` and humidity above zero. The
 provisional outdoor window for Log A is 2026-04-20 through 2026-05-11.
+
+That window is retained for exploratory descriptive summaries, not used to
+invent configured completeness. Since the 2026-09-05 accounting correction,
+completeness is unavailable unless an intended start/end and cadence are
+supplied. New output must be kept separate from historical published field
+rates until their denominators are reconciled. See [RELIABILITY_METRICS.md](RELIABILITY_METRICS.md).
 
 The command writes `analysis/output/results.md` plus four plots. Three are kept
 in `analysis/figures/` under publication-oriented names:
