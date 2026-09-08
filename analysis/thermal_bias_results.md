@@ -45,6 +45,32 @@ footnote: at 1000 W/m² and 0.5 m/s the predicted rises are 19.4°C dark box,
 to the painted box is approximately 1.5°C. Differences in coupled heat load,
 geometry, and convection prevent attributing this entire difference to shielding.
 
+The painted control is now a first-class `V0P` variant in the default CSV and
+figure, not just the single-point sensitivity calculation. It is copied from
+`V0` with only absorptance changed from 0.90 to 0.30. Equal emissivity is a
+modeling assumption, not a measured property of a paint or filament. The main
+[CSV](output/thermal_bias_table.csv) contains all four variants at every reported
+operating point; the existing V0/V1/V2 values are unchanged.
+
+| G [W/m²] | wind [m/s] | V0P dT [°C] | V0P RH error [%RH] | V0P minus V1 dT [°C] |
+|---:|---:|---:|---:|---:|
+| 800 | 0.0 | 3.4679 | -8.9307 | 0.5156 |
+| 800 | 0.5 | 2.9290 | -7.6692 | 0.5265 |
+| 800 | 1.0 | 2.5343 | -6.7176 | 0.5353 |
+| 800 | 2.0 | 1.9955 | -5.3794 | 0.5425 |
+| 800 | 5.0 | 1.2175 | -3.3637 | 0.4899 |
+| 1000 | 0.0 | 5.2965 | -12.9049 | 1.6087 |
+| 1000 | 0.5 | 4.4796 | -11.1857 | 1.4771 |
+| 1000 | 1.0 | 3.8793 | -9.8651 | 1.3803 |
+| 1000 | 2.0 | 3.0576 | -7.9743 | 1.2405 |
+| 1000 | 5.0 | 1.8674 | -5.0543 | 0.9571 |
+
+The last column is the difference of the exported rounded predictions. It is
+neither measured shielding benefit nor an uncertainty bound. The small
+800 W/m² differences also show why the dark-box comparison alone overstates the
+incremental design case. Physical matched-finish comparisons, geometry inventory
+and joint-uncertainty evaluation remain required before a validation verdict.
+
 Ambient case: `T_air = 30 degC`, `RH_true = 50 %`, clear-sky `T_sky = 10 degC`
 (20 K depression). `dT` in degC (sensor rise above true ambient); `RH_err` in
 %RH (reported minus true; **negative = reads dry**).
@@ -86,7 +112,8 @@ the literature finding that aspiration helps **mainly at low wind** (Theisen et 
 Deford et al.).
 
 Figure: `analysis/figures/thermal_bias.png` (left: dT vs wind; right: RH_err vs
-wind; solid = 1000 W/m^2, dashed = 800 W/m^2).
+wind; solid = 1000 W/m^2, dashed = 800 W/m^2; V0P is the painted control).
+Marker shapes distinguish variants on the 1000 W/m² curves as well as color.
 
 ## 3. Assumptions block (every input, with status)
 

@@ -34,7 +34,8 @@ The cheapest comparison matters: at 1000 W/m² and 0.5 m/s the model predicts
 3.0°C for the passive shield. The latter's incremental modeled advantage over
 the painted box is about 1.5°C; the variants also differ in heat coupling and
 convection assumptions. This does not isolate a measured shielding effect.
-See [the sensitivity calculation](analysis/thermal_bias_results.md#4-sensitivity-which-uncertain-input-dominates).
+The default CSV and figure include the painted control (`V0P`) at every reported
+operating point. See [the matched-finish model comparison](analysis/thermal_bias_results.md#2-bias-vs-variant-table-analytical-system-comparison).
 
 ```mermaid
 flowchart LR

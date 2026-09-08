@@ -1,5 +1,17 @@
 # Enclosure software review packet — partial field-validation handoff
 
+## 2026-09-08 addendum — matched-finish thermal control
+
+New task EN-D01 uses base `199cb5d38bc70af271b4e064d79d4d8415ff4630` and
+branch `task/priority-one-20260908`. Source identity is the addendum's containing
+commit / PR head, not the older candidate manifest below. See
+[task verification](../evidence/task-2026-09-08/verification.md) for five red/green
+regressions, all 29 tests, consumer CLI/figure checks and artifact hashes.
+`V0P` is a new variant ID and adds ten CSV rows; all thirty legacy rows remain
+unchanged. These are analytical controls, not new field measurements. The
+historical review packet below remains the record of the earlier integrity sprint.
+
+
 Prepared 2026-09-06; sprint began 2026-09-05. Repository:
 `/Users/redhose/Developer/research-sprints/2026-09-05/Enclosure-Research`, remote
 `https://github.com/500ft/Enclosure-Research.git`.

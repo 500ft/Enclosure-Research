@@ -19,7 +19,7 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Compile analysis scripts
         run: python -m compileall -q analysis
-      - name: Test reliability accounting and CLI boundaries
+      - name: Test reliability accounting, thermal controls and CLI boundaries
         run: python -m unittest discover -s analysis/tests -v
       - name: Check bibliography coverage
         run: python analysis/check_literature_coverage.py
