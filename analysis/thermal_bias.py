@@ -34,6 +34,9 @@ VARIANTS (from ``docs/cad_fea_plan.md`` Section 2)
   V0  Baseline closed box. Sensor effectively coupled to a solar-loaded wall;
       light internal electronics/battery self-heating; modest natural
       convection. This is the "enclosure reads hot" baseline.
+  V0P Painted closed-box control. V0 with only solar absorptance changed to
+      match V1/V2; geometry, heat load, convection and emissivity stay fixed.
+      V0P-to-V1 remains a system comparison, not an isolated shielding effect.
   V1  Passive multi-plate radiation shield (Stevenson-style). Stacked plates
       shade the sensor (large reduction in the solar flux that reaches it) and
       open inter-plate gaps boost natural convection. Two-zone layout keeps the
@@ -50,7 +53,7 @@ from __future__ import annotations
 
 import argparse
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 import numpy as np
 
@@ -280,7 +283,7 @@ def _a(name: str):
 
 def build_variants() -> list[Variant]:
     eps = float(_a("eps_surface"))
-    return [
+    variants = [
         Variant(
             vid="V0",
             name="Baseline closed box",
@@ -322,6 +325,15 @@ def build_variants() -> list[Variant]:
             note="V1 shield + low-power fan; forced convection at the sensor (upper-bound airflow).",
         ),
     ]
+    # Preserve the legacy V0/V1/V2 order used by sensitivity callers. Copy the
+    # dark box rather than reconstructing it: painting must not change geometry,
+    # ventilation, sky view or coupled electronics load accidentally.
+    variants.append(replace(
+        variants[0], vid="V0P", name="Painted closed-box control",
+        alpha=float(_a("alpha_shield")),
+        note="V0 with only absorptance matched to V1/V2; all other physics unchanged.",
+    ))
+    return variants
 
 
 # ---------------------------------------------------------------------------
@@ -404,6 +416,8 @@ def print_bias_table(res: SweepResult, variants: list[Variant], wind_marks: list
     print("BIAS-VS-VARIANT TABLE  (SIMULATION -- pending lab co-location data)")
     print("delta-T = sensor temperature rise above true ambient [degC]")
     print("RH_err  = reported-minus-true relative humidity [%RH] (negative = reads dry)")
+    print("V0P holds V0 geometry/load/airflow fixed; only absorptance matches the shield.")
+    print("V0P versus V1 is a system comparison, not an isolated shielding effect.")
     print("=" * 78)
     header = f"{'G[W/m2]':>8}{'wind[m/s]':>11}  " + "".join(
         f"{name_by_id[v]+' dT/RHerr':>26}" for v in vid_order
@@ -470,7 +484,8 @@ def make_figure(res: SweepResult, variants: list[Variant], out_path: str) -> Non
 
     g_hi = max(res.g_values)
     g_lo = min(res.g_values)
-    colors = {"V0": "#c0392b", "V1": "#2980b9", "V2": "#27ae60"}
+    colors = {"V0": "#c0392b", "V0P": "#7d3c98", "V1": "#2980b9", "V2": "#27ae60"}
+    markers = {"V0": "o", "V0P": "s", "V1": "^", "V2": "D"}
     name_by_id = {v.vid: v.name for v in variants}
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.4))
@@ -480,6 +495,7 @@ def make_figure(res: SweepResult, variants: list[Variant], out_path: str) -> Non
         ax.plot(
             res.wind, res.dT[v.vid][g_hi],
             color=colors[v.vid], lw=2.2,
+            marker=markers[v.vid], markevery=10, markersize=3,
             label=f"{v.vid} {name_by_id[v.vid]} (G={g_hi:.0f})",
         )
         ax.plot(
@@ -498,6 +514,7 @@ def make_figure(res: SweepResult, variants: list[Variant], out_path: str) -> Non
         ax.plot(
             res.wind, res.rh_err[v.vid][g_hi],
             color=colors[v.vid], lw=2.2,
+            marker=markers[v.vid], markevery=10, markersize=3,
             label=f"{v.vid} {name_by_id[v.vid]}",
         )
         ax.plot(
@@ -562,8 +579,7 @@ def sensitivity_block(
     print(f"{'baseline':<46}{dt_of(base['V0']):>10.1f}{dt_of(base['V1']):>10.1f}")
 
     # alpha (baseline surface darkness): light vs dark
-    v0_light = build_variants()[0]
-    v0_light.alpha = 0.30
+    v0_light = base["V0P"]
     print(f"{'V0 surface painted white (alpha 0.90 -> 0.30)':<46}"
           f"{dt_of(v0_light):>10.1f}{'-':>10}")
 

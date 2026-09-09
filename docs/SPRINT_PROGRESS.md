@@ -1,5 +1,28 @@
 # Sprint progress
 
+## 2026-09-08 — EN-D01: primary matched-finish thermal control
+
+One additional two-hour-estimate P1 task, outside the original 30-hour sprint;
+historical task rows and owner-blocked work remain unchanged. Baseline main
+`199cb5d38bc70af271b4e064d79d4d8415ff4630`, clean starting tree; worktree
+`/Users/redhose/Developer/daily-prs/2026-09-08/Enclosure-Research`, branch
+`task/priority-one-20260908`. Agent used execute-and-test and quality-gates:
+baseline 24 tests pass, then five new regressions fail before implementation,
+then 29 pass. The initial `python3` (3.13.7) attempt lacked pandas; this was an
+environment mismatch, resolved with existing `python` (3.11.8), not a code fix.
+
+Default sweep/CSV/figure now include V0P: a copied V0 with only absorptance
+changed to match the shield. Existing 30 numeric CSV rows are preserved exactly;
+10 control rows added. External-working-directory CLI and regenerated figure
+were checked. No fabricated measurements, new physical approval, external
+outreach or deployment. [Verification and limits](../evidence/task-2026-09-08/verification.md).
+
+Containing commit identifies source; local changes are committed as 500ft for
+the requested PR. Parent agent verifies push/PR separately. Next command:
+`python -m unittest discover -s analysis/tests -v`. Next scientific unblock:
+Owner supplies the actual box/reference inventory and authorized provenance;
+the model comparison is not an isolated shield-effect or hardware verdict.
+
 ## 2026-09-06 — Main-branch placement authorized
 
 Owner explicitly requested these PRs be merged to their respective main branches. This supersedes earlier placement-blocked/draft-only entries for the current changes. The combined main-targeted PR retains prerequisite integrity work, unchanged task ledgers and all actual hardware/disclosure gates. No CAD or experiment is marked complete. Merge completion and resulting main commit are verified by GitHub rather than asserted in advance here.
