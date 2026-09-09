@@ -77,3 +77,54 @@ class MatchedFinishTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+
+class NightClearSkyTests(unittest.TestCase):
+    """EN-D02: the zero-solar case is the same solver with G = 0, not a new model.
+
+    Physical necessity, not a tuned expectation: with no solar load, no net internal heating
+    above what convection removes, and a sky colder than the air, a surface that sees any sky
+    must sit at or below ambient. The tests assert sign and ordering, never a magnitude
+    typed by hand, so they cannot silently encode a stale number.
+    """
+
+    def setUp(self):
+        self.variants = build_variants()
+        self.by_id = {v.vid: v for v in self.variants}
+        self.wind = np.array([0.0, 0.5, 2.0, 5.0])
+        self.night = run_sweep(self.variants, self.wind, [0.0], 30.0, 50.0, 10.0, 5.0, 4.0)
+        self.day = run_sweep(self.variants, self.wind, [1000.0], 30.0, 50.0, 10.0, 5.0, 4.0)
+
+    def test_sky_exposed_box_reads_below_ambient_at_night(self):
+        for vid in ("V0", "V0P"):
+            self.assertGreater(self.by_id[vid].f_sky, 0.0)
+            self.assertTrue(np.all(self.night.dT[vid][0.0] < 0.0),
+                            f"{vid} should show a COLD bias with G = 0 and a clear sky")
+
+    def test_night_bias_is_opposite_in_sign_to_day_bias_for_the_box(self):
+        self.assertTrue(np.all(self.day.dT["V0"][1000.0] > 0.0))
+        self.assertTrue(np.all(self.night.dT["V0"][0.0] < 0.0))
+
+    def test_blocking_the_sky_view_shrinks_the_night_cold_bias(self):
+        # The shield exists to cut f_sky; at night that is what limits radiative over-cooling.
+        self.assertLess(self.by_id["V1"].f_sky, self.by_id["V0"].f_sky)
+        self.assertTrue(np.all(np.abs(self.night.dT["V1"][0.0]) < np.abs(self.night.dT["V0"][0.0])))
+
+    def test_painted_control_is_identical_to_dark_box_at_night(self):
+        # Absorptance only enters through solar load; with G = 0 the finish cannot matter.
+        np.testing.assert_allclose(self.night.dT["V0P"][0.0], self.night.dT["V0"][0.0], rtol=0, atol=1e-12)
+
+    def test_wind_reduces_the_night_cold_bias_magnitude(self):
+        mags = np.abs(self.night.dT["V0"][0.0])
+        self.assertTrue(np.all(np.diff(mags) <= 0.0))
+
+    def test_night_table_is_written_and_contains_every_variant(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "night.csv"
+            write_bias_table(self.night, self.variants, [0.0, 2.0], str(out))
+            with out.open() as fh:
+                rows = list(csv.reader(fh))
+            body = [r for r in rows if r and r[0] == "0"]
+            self.assertEqual(len(body), 2 * len(self.variants))
+            self.assertTrue(all(float(r[4]) < 0.0 for r in body if r[2] in ("V0", "V0P")))

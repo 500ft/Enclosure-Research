@@ -1,5 +1,15 @@
 # Sprint progress
 
+## 2026-09-09 — EN-D02 night clear-sky case
+
+Ran the existing solver at zero solar load with unchanged assumptions and promoted the result to a
+[reproducible table](../analysis/output/thermal_bias_night_table.csv) and a
+[results section](../analysis/thermal_bias_results.md): the baseline box reads **-4.0 °C** in calm clear-sky
+night against **+22.7 °C** at midday, so the enclosure error is sign-changing, not warm. The daytime table
+and figure are byte-unchanged; six new tests assert sign and ordering only. Still SIMULATION / pending
+lab data; owner gates unchanged. [Verification](../evidence/task-2026-09-09/README.md).
+Branch `task/priority-two-20260909`.
+
 ## 2026-09-08 — EN-D01: primary matched-finish thermal control
 
 One additional two-hour-estimate P1 task, outside the original 30-hour sprint;

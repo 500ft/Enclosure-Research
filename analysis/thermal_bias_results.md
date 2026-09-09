@@ -204,3 +204,29 @@ as indicative pending sensor datasheets and co-location, per the CAD/FEA plan.
 *This lumped analytical result is the baseline; the conjugate-heat-transfer FEA
 in `docs/cad_fea_plan.md` Section 3.2 (`analysis/cad_fea/`) will refine it. All
 numbers are SIMULATION, pending lab co-location data.*
+
+## Night clear-sky case (EN-D02, 2026-09-09) — the bias changes sign
+
+Everything above is a daytime slice. The same energy balance, with the same clear-sky
+depression and **no solar load**, predicts the opposite error: long-wave loss to the cold sky
+dominates and a sky-exposed enclosure reads *below* ambient. From
+[`analysis/output/thermal_bias_night_table.csv`](output/thermal_bias_night_table.csv), regenerated
+by `python analysis/thermal_bias.py` (assumptions unchanged; G = 0 W/m²):
+
+| variant | ΔT, calm | ΔT, 5 m/s | RH error, calm |
+| --- | ---: | ---: | ---: |
+| V0 baseline closed box | -4.03 °C | -1.39 °C | +13.2 %RH |
+| V1 passive multi-plate shield | -0.012 °C | — | +0.03 %RH |
+| V2 aspirated reference | -0.005 °C | — | +0.01 %RH |
+
+Against the daytime V0 warm bias of +22.7 °C at 1000 W/m² and calm, the baseline box's error is
+not "warm" but **sign-changing across the diurnal cycle**, which is a different claim about what a
+field comparison must resolve: a 24 h co-location, not a midday one. The shield's benefit at night is
+the same mechanism as by day — it blocks the sky view (f_sky 0.05 vs 0.5) — so the design case for
+V1 does not depend on the sun. The painted control V0P is identical to V0 at night to machine precision,
+as it must be: absorptance enters only through the solar term.
+
+Same status as every other number here: **SIMULATION / pending lab data.** Sign and ordering are
+asserted by [tests](tests/test_thermal_bias.py) (`NightClearSkyTests`); magnitudes are model outputs
+under the stated assumptions, not measurements. The sky-temperature depression is a bounded assumption
+(`T_sky_offset`); a measured clear-sky value would move the magnitudes, not the sign.
