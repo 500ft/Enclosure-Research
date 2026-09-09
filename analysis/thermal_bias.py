@@ -443,7 +443,8 @@ def print_bias_table(res: SweepResult, variants: list[Variant], wind_marks: list
         d = res.dT[vid][g_hi]
         r = res.rh_err[vid][g_hi]
         print(
-            f"  {name_by_id[vid]:<30} dT = {d.max():5.1f} (calm) .. {d.min():4.1f} (windy) degC,"
+            f"  {name_by_id[vid]:<30} dT = {d[np.argmin(res.wind)]:5.1f} (calm) .. "
+            f"{d[np.argmax(res.wind)]:4.1f} (windy) degC,"
             f"  RH_err = {r.min():6.1f} .. {r.max():5.1f} %RH"
         )
     print()
@@ -636,8 +637,8 @@ def main() -> None:
     p.add_argument("--no-figure", action="store_true", help="Skip figure generation")
     p.add_argument("--night-table", default="analysis/output/thermal_bias_night_table.csv",
                    help="Write the zero-solar (night, clear-sky) bias table here. Same solver, same "
-                        "assumptions, G = 0: reports the radiative COLD bias the daytime tables cannot "
-                        "show. Set to '' to skip.")
+                        "assumptions, G = 0: reports the bias without solar heating. "
+                        "The sign depends on the energy balance. Set to '' to skip.")
     p.add_argument("--table", default="analysis/output/thermal_bias_table.csv",
                    help="Write the bias-vs-variant table here (the artifact of record; "
                         "compare this, not the PNG). Set to '' to skip.")
@@ -664,15 +665,15 @@ def main() -> None:
     if args.table:
         write_bias_table(res, variants, args.wind_marks, args.table)
     if args.night_table:
-        # Night, clear sky: the same energy balance with no solar load. Long-wave loss to the
-        # cold sky now dominates, so a sky-exposed enclosure reads BELOW ambient. Kept as a
+        # Night, clear sky: the same energy balance with no solar load. Long-wave loss
+        # dominates at the default operating point, not for every possible input. Kept as a
         # separate table so the daytime table and figure are byte-unchanged.
         night = run_sweep(
             variants, wind, [0.0],
             t_air_c=args.t_air, rh_true_pct=args.rh_air, t_sky_c=t_sky_c,
             h_floor=h_floor, h_slope=h_slope,
         )
-        print("\nNIGHT CLEAR-SKY CASE (G = 0, same T_sky depression): delta-T is a COLD bias")
+        print("\nNIGHT CLEAR-SKY CASE (G = 0, same T_sky depression): signed delta-T under these assumptions")
         print_bias_table(night, variants, args.wind_marks)
         write_bias_table(night, variants, args.wind_marks, args.night_table)
     sensitivity_block(variants, args.t_air, args.rh_air, t_sky_c, h_floor, h_slope)

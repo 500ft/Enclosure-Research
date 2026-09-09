@@ -1,6 +1,7 @@
 """Developer checks for the matched-finish control, not physical validation."""
 
 import csv
+from contextlib import redirect_stdout
 from dataclasses import asdict
 import io
 from pathlib import Path
@@ -11,7 +12,7 @@ import unittest
 
 import numpy as np
 
-from analysis.thermal_bias import build_variants, run_sweep, write_bias_table
+from analysis.thermal_bias import build_variants, print_bias_table, run_sweep, write_bias_table
 
 
 class MatchedFinishTests(unittest.TestCase):
@@ -75,18 +76,12 @@ class MatchedFinishTests(unittest.TestCase):
             self.assertGreater((Path(directory) / "bias.png").stat().st_size, 1000)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
-
 class NightClearSkyTests(unittest.TestCase):
     """EN-D02: the zero-solar case is the same solver with G = 0, not a new model.
 
-    Physical necessity, not a tuned expectation: with no solar load, no net internal heating
-    above what convection removes, and a sky colder than the air, a surface that sees any sky
-    must sit at or below ambient. The tests assert sign and ordering, never a magnitude
-    typed by hand, so they cannot silently encode a stale number.
+    Under the default loads and 20 K sky depression, radiative loss exceeds
+    internal heating at ambient. This is conditional, not a universal night
+    prediction; a weaker sky depression is an explicit opposite-sign control.
     """
 
     def setUp(self):
@@ -106,8 +101,9 @@ class NightClearSkyTests(unittest.TestCase):
         self.assertTrue(np.all(self.day.dT["V0"][1000.0] > 0.0))
         self.assertTrue(np.all(self.night.dT["V0"][0.0] < 0.0))
 
-    def test_blocking_the_sky_view_shrinks_the_night_cold_bias(self):
-        # The shield exists to cut f_sky; at night that is what limits radiative over-cooling.
+    def test_whole_shield_variant_has_smaller_night_bias_at_default_conditions(self):
+        # V1 changes sky view, geometry, heat load and convection together;
+        # this comparison does not isolate a causal sky-view effect.
         self.assertLess(self.by_id["V1"].f_sky, self.by_id["V0"].f_sky)
         self.assertTrue(np.all(np.abs(self.night.dT["V1"][0.0]) < np.abs(self.night.dT["V0"][0.0])))
 
@@ -128,3 +124,39 @@ class NightClearSkyTests(unittest.TestCase):
             body = [r for r in rows if r and r[0] == "0"]
             self.assertEqual(len(body), 2 * len(self.variants))
             self.assertTrue(all(float(r[4]) < 0.0 for r in body if r[2] in ("V0", "V0P")))
+
+    def test_night_summary_labels_the_actual_wind_endpoints(self):
+        for result, solar in ((self.night, 0.0), (self.day, 1000.0)):
+            with self.subTest(solar=solar):
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    print_bias_table(result, self.variants, [0.0, 5.0])
+                values = result.dT["V0"][solar]
+                expected = f"dT = {values[0]:5.1f} (calm) .. {values[-1]:4.1f} (windy) degC"
+                self.assertIn(expected, output.getvalue())
+
+    def test_weaker_sky_depression_can_reverse_the_night_bias(self):
+        # Counterexample to a sign-invariant claim: retain the same electronics
+        # load and geometry; change ONLY sky temperature from 10 to 29 degC.
+        weak_cooling = run_sweep(self.variants, self.wind, [0.0],
+                                 30.0, 50.0, 29.0, 5.0, 4.0)
+        self.assertTrue(np.all(self.night.dT["V0"][0.0] < 0.0))
+        self.assertTrue(np.all(weak_cooling.dT["V0"][0.0] > 0.0))
+
+    def test_consumer_cli_reproduces_both_committed_tables_without_overwriting_them(self):
+        root = Path(__file__).resolve().parents[2]
+        names = ("thermal_bias_table.csv", "thermal_bias_night_table.csv")
+        committed = {name: (root / "analysis/output" / name).read_bytes() for name in names}
+        with tempfile.TemporaryDirectory() as directory:
+            result = subprocess.run(
+                [sys.executable, str(root / "analysis/thermal_bias.py"), "--no-figure",
+                 "--table", names[0], "--night-table", names[1]],
+                cwd=directory, text=True, capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            for name in names:
+                self.assertEqual((Path(directory) / name).read_bytes(), committed[name])
+                self.assertEqual((root / "analysis/output" / name).read_bytes(), committed[name])
+
+
+if __name__ == "__main__":
+    unittest.main()

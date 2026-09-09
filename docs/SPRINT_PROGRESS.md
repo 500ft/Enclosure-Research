@@ -1,5 +1,12 @@
 # Sprint progress
 
+## Review amendment — 2026-09-09
+
+Read [the reproduced findings, corrections and current checks](../evidence/review-2026-09-09/README.md)
+before the historical day-2 counts below. Review branch `review/day-two-20260909`;
+amendment targets the existing day-2 PR, not main. No owner/measurement gate closes.
+
+
 ## 2026-09-09 — EN-D02 night clear-sky case
 
 Ran the existing solver at zero solar load with unchanged assumptions and promoted the result to a

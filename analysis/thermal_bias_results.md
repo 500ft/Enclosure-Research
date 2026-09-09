@@ -205,7 +205,7 @@ as indicative pending sensor datasheets and co-location, per the CAD/FEA plan.
 in `docs/cad_fea_plan.md` Section 3.2 (`analysis/cad_fea/`) will refine it. All
 numbers are SIMULATION, pending lab co-location data.*
 
-## Night clear-sky case (EN-D02, 2026-09-09) — the bias changes sign
+## Night clear-sky case (EN-D02, 2026-09-09) — a conditional sign reversal
 
 Everything above is a daytime slice. The same energy balance, with the same clear-sky
 depression and **no solar load**, predicts the opposite error: long-wave loss to the cold sky
@@ -219,14 +219,25 @@ by `python analysis/thermal_bias.py` (assumptions unchanged; G = 0 W/m²):
 | V1 passive multi-plate shield | -0.012 °C | — | +0.03 %RH |
 | V2 aspirated reference | -0.005 °C | — | +0.01 %RH |
 
-Against the daytime V0 warm bias of +22.7 °C at 1000 W/m² and calm, the baseline box's error is
-not "warm" but **sign-changing across the diurnal cycle**, which is a different claim about what a
-field comparison must resolve: a 24 h co-location, not a midday one. The shield's benefit at night is
-the same mechanism as by day — it blocks the sky view (f_sky 0.05 vs 0.5) — so the design case for
-V1 does not depend on the sun. The painted control V0P is identical to V0 at night to machine precision,
-as it must be: absorptance enters only through the solar term.
+Against the daytime V0 warm bias of +22.7 °C at 1000 W/m² and calm, these two
+steady-state scenarios exhibit opposite signs. They motivate sampling both day
+and night during co-location, including at least a full diurnal cycle; they do
+not simulate a 24 h transient or establish that one day validates the design.
+Cloud cover, wind and sky temperature need coverage beyond a single nominal
+case. V1's smaller modeled night bias is a **whole-system comparison**: sky
+view, geometry, internal load and convection all differ from V0. It cannot
+isolate the effect of blocking sky view. The painted control V0P is identical
+to V0 at night because its only changed parameter, solar absorptance, multiplies
+the zero solar load; no claim is made that real paint leaves emissivity unchanged.
 
 Same status as every other number here: **SIMULATION / pending lab data.** Sign and ordering are
 asserted by [tests](tests/test_thermal_bias.py) (`NightClearSkyTests`); magnitudes are model outputs
-under the stated assumptions, not measurements. The sky-temperature depression is a bounded assumption
-(`T_sky_offset`); a measured clear-sky value would move the magnitudes, not the sign.
+under the stated assumptions, not measurements. Sky-temperature depression can
+change **both magnitude and sign**: with the same 30 °C air and 0.8 W V0 load,
+changing only sky temperature from 10 to 29 °C changes calm-night ΔT from
+−4.028 to +0.566 °C in the existing solver. This is a sensitivity counterexample,
+not a measured clear-sky condition. At G = 0 and ambient surface temperature,
+cold bias occurs only when sky-directed radiative loss exceeds internal heating.
+The assumed shield plates/surroundings remain at local air temperature; their
+own nighttime radiative cooling is not independently solved. The small V1/V2
+predictions therefore need particular caution before a physical shield claim.

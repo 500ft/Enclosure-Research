@@ -1,5 +1,12 @@
 # Enclosure software review packet — partial field-validation handoff
 
+## Review amendment — 2026-09-09
+
+Read [the reproduced findings, corrections and current checks](../evidence/review-2026-09-09/README.md)
+before the historical day-2 counts below. Review branch `review/day-two-20260909`;
+amendment targets the existing day-2 PR, not main. No owner/measurement gate closes.
+
+
 ## 2026-09-09 addendum — night clear-sky case (EN-D02)
 
 The existing solver at G = 0 with unchanged assumptions predicts a **-4.0 °C cold bias** for the

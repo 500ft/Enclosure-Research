@@ -1,33 +1,11 @@
-# Proposed CI change — not active
+# Thermal table verification — installed on the review branch
 
-`ci-proposed/ci-thermal-table-diff.patch` contains a workflow change that **is not installed**. Nothing in this
-directory is executed by GitHub Actions; it only takes effect once someone applies it.
+The old proposal is superseded by [the active workflow source](../.github/workflows/ci.yml).
+Current credentials include workflow permission; the previous restriction was
+historical, not a current blocker.
 
-## Why it is a patch rather than the workflow file
-
-The token used to open this pull request carries Contents and Pull requests scope but not
-`workflow`, so it cannot write `.github/workflows/**`. That was confirmed two ways rather
-than assumed:
-
-```
-git push      -> ! [remote rejected] refusing to allow a Personal Access Token to create
-                 or update workflow `.github/workflows/ci.yml` without `workflow` scope
-Contents API  -> 403 Resource not accessible by personal access token
-```
-
-That restriction is deliberate: it stops an automated token from silently changing what CI
-runs. Shipping the change as a patch keeps that property — the diff is reviewable, and it
-does nothing until a human or an authorised token installs it.
-
-## Apply it
-
-```bash
-git apply ci-proposed/ci-thermal-table-diff.patch
-git add .github/workflows/ci.yml
-git commit -m "ci: check the thermal table against the committed artifact"
-```
-
-`git apply --check ci-proposed/ci-thermal-table-diff.patch` was run against this branch and succeeds.
-
-Once applied, delete this directory — it exists only to carry the change across the
-permission gap.
+CI now regenerates both day and night tables into the runner's temporary directory
+and compares them to the committed references. It must not overwrite the references
+before comparing, which would let changed outputs compare equal to themselves.
+PR triggers include the day-1 manual stack base. Hosted success is recorded in the
+review handoff after pushing; the presence of this file alone is not success.
