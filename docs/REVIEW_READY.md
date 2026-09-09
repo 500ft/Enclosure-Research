@@ -1,5 +1,20 @@
 # Enclosure software review packet — partial field-validation handoff
 
+## Review amendment — 2026-09-09
+
+Read [the reproduced findings, corrections and current checks](../evidence/review-2026-09-09/README.md)
+before the historical day-2 counts below. Review branch `review/day-two-20260909`;
+amendment targets the existing day-2 PR, not main. No owner/measurement gate closes.
+
+
+## 2026-09-09 addendum — night clear-sky case (EN-D02)
+
+The existing solver at G = 0 with unchanged assumptions predicts a **-4.0 °C cold bias** for the
+baseline box in calm clear-sky night, against the midday warm bias above: the enclosure error is
+sign-changing over the diurnal cycle, so a field co-location needs 24 h coverage. Daytime table and
+figure are byte-unchanged; six new tests assert sign and ordering only. Still SIMULATION / pending lab
+data. [Verification](../evidence/task-2026-09-09/README.md).
+
 ## 2026-09-08 addendum — matched-finish thermal control
 
 New task EN-D01 uses base `199cb5d38bc70af271b4e064d79d4d8415ff4630` and

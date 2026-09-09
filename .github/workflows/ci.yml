@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+    branches: [main, 'task/priority-one-*']
 
 jobs:
   research-checks:
@@ -23,5 +23,8 @@ jobs:
         run: python -m unittest discover -s analysis/tests -v
       - name: Check bibliography coverage
         run: python analysis/check_literature_coverage.py
-      - name: Run analytical thermal model
-        run: python analysis/thermal_bias.py --no-figure
+      - name: Regenerate and verify committed day and night thermal tables
+        run: |
+          python analysis/thermal_bias.py --no-figure --table "$RUNNER_TEMP/thermal-day.csv" --night-table "$RUNNER_TEMP/thermal-night.csv"
+          diff -u analysis/output/thermal_bias_table.csv "$RUNNER_TEMP/thermal-day.csv"
+          diff -u analysis/output/thermal_bias_night_table.csv "$RUNNER_TEMP/thermal-night.csv"

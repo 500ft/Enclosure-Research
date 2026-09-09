@@ -1,6 +1,7 @@
 """Developer checks for the matched-finish control, not physical validation."""
 
 import csv
+from contextlib import redirect_stdout
 from dataclasses import asdict
 import io
 from pathlib import Path
@@ -11,7 +12,7 @@ import unittest
 
 import numpy as np
 
-from analysis.thermal_bias import build_variants, run_sweep, write_bias_table
+from analysis.thermal_bias import build_variants, print_bias_table, run_sweep, write_bias_table
 
 
 class MatchedFinishTests(unittest.TestCase):
@@ -73,6 +74,88 @@ class MatchedFinishTests(unittest.TestCase):
             self.assertIn("not an isolated shielding effect", result.stdout)
             self.assertIn(",V0P,", (Path(directory) / "bias.csv").read_text())
             self.assertGreater((Path(directory) / "bias.png").stat().st_size, 1000)
+
+
+class NightClearSkyTests(unittest.TestCase):
+    """EN-D02: the zero-solar case is the same solver with G = 0, not a new model.
+
+    Under the default loads and 20 K sky depression, radiative loss exceeds
+    internal heating at ambient. This is conditional, not a universal night
+    prediction; a weaker sky depression is an explicit opposite-sign control.
+    """
+
+    def setUp(self):
+        self.variants = build_variants()
+        self.by_id = {v.vid: v for v in self.variants}
+        self.wind = np.array([0.0, 0.5, 2.0, 5.0])
+        self.night = run_sweep(self.variants, self.wind, [0.0], 30.0, 50.0, 10.0, 5.0, 4.0)
+        self.day = run_sweep(self.variants, self.wind, [1000.0], 30.0, 50.0, 10.0, 5.0, 4.0)
+
+    def test_sky_exposed_box_reads_below_ambient_at_night(self):
+        for vid in ("V0", "V0P"):
+            self.assertGreater(self.by_id[vid].f_sky, 0.0)
+            self.assertTrue(np.all(self.night.dT[vid][0.0] < 0.0),
+                            f"{vid} should show a COLD bias with G = 0 and a clear sky")
+
+    def test_night_bias_is_opposite_in_sign_to_day_bias_for_the_box(self):
+        self.assertTrue(np.all(self.day.dT["V0"][1000.0] > 0.0))
+        self.assertTrue(np.all(self.night.dT["V0"][0.0] < 0.0))
+
+    def test_whole_shield_variant_has_smaller_night_bias_at_default_conditions(self):
+        # V1 changes sky view, geometry, heat load and convection together;
+        # this comparison does not isolate a causal sky-view effect.
+        self.assertLess(self.by_id["V1"].f_sky, self.by_id["V0"].f_sky)
+        self.assertTrue(np.all(np.abs(self.night.dT["V1"][0.0]) < np.abs(self.night.dT["V0"][0.0])))
+
+    def test_painted_control_is_identical_to_dark_box_at_night(self):
+        # Absorptance only enters through solar load; with G = 0 the finish cannot matter.
+        np.testing.assert_allclose(self.night.dT["V0P"][0.0], self.night.dT["V0"][0.0], rtol=0, atol=1e-12)
+
+    def test_wind_reduces_the_night_cold_bias_magnitude(self):
+        mags = np.abs(self.night.dT["V0"][0.0])
+        self.assertTrue(np.all(np.diff(mags) <= 0.0))
+
+    def test_night_table_is_written_and_contains_every_variant(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "night.csv"
+            write_bias_table(self.night, self.variants, [0.0, 2.0], str(out))
+            with out.open() as fh:
+                rows = list(csv.reader(fh))
+            body = [r for r in rows if r and r[0] == "0"]
+            self.assertEqual(len(body), 2 * len(self.variants))
+            self.assertTrue(all(float(r[4]) < 0.0 for r in body if r[2] in ("V0", "V0P")))
+
+    def test_night_summary_labels_the_actual_wind_endpoints(self):
+        for result, solar in ((self.night, 0.0), (self.day, 1000.0)):
+            with self.subTest(solar=solar):
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    print_bias_table(result, self.variants, [0.0, 5.0])
+                values = result.dT["V0"][solar]
+                expected = f"dT = {values[0]:5.1f} (calm) .. {values[-1]:4.1f} (windy) degC"
+                self.assertIn(expected, output.getvalue())
+
+    def test_weaker_sky_depression_can_reverse_the_night_bias(self):
+        # Counterexample to a sign-invariant claim: retain the same electronics
+        # load and geometry; change ONLY sky temperature from 10 to 29 degC.
+        weak_cooling = run_sweep(self.variants, self.wind, [0.0],
+                                 30.0, 50.0, 29.0, 5.0, 4.0)
+        self.assertTrue(np.all(self.night.dT["V0"][0.0] < 0.0))
+        self.assertTrue(np.all(weak_cooling.dT["V0"][0.0] > 0.0))
+
+    def test_consumer_cli_reproduces_both_committed_tables_without_overwriting_them(self):
+        root = Path(__file__).resolve().parents[2]
+        names = ("thermal_bias_table.csv", "thermal_bias_night_table.csv")
+        committed = {name: (root / "analysis/output" / name).read_bytes() for name in names}
+        with tempfile.TemporaryDirectory() as directory:
+            result = subprocess.run(
+                [sys.executable, str(root / "analysis/thermal_bias.py"), "--no-figure",
+                 "--table", names[0], "--night-table", names[1]],
+                cwd=directory, text=True, capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            for name in names:
+                self.assertEqual((Path(directory) / name).read_bytes(), committed[name])
+                self.assertEqual((root / "analysis/output" / name).read_bytes(), committed[name])
 
 
 if __name__ == "__main__":
