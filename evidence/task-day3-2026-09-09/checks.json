@@ -1,0 +1,30 @@
+{
+  "date": "2026-09-09",
+  "base": "c121f2bb3f247220df39dffd552468678254bbc8",
+  "checks": [
+    {
+      "command": "python -m compileall -q analysis",
+      "chunk_id": "f44f41",
+      "wall_time_seconds": 7.08e-7,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    },
+    {
+      "command": "PYTHONPATH=. python -m unittest discover -s analysis/tests -q",
+      "chunk_id": "d697cc",
+      "wall_time_seconds": 3.33e-7,
+      "original_token_count": 67,
+      "output": "----------------------------------------------------------------------\nRan 47 tests in 2.275s\n\nOK\n[table] wrote /var/folders/rm/1f4h8c954_58tny8x94fr7k40000gn/T/tmpz9sop1rs/bias.csv\n[table] wrote /var/folders/rm/1f4h8c954_58tny8x94fr7k40000gn/T/tmpog_m_g31/night.csv\n",
+      "exit_code": 0
+    },
+    {
+      "command": "python analysis/check_literature_coverage.py",
+      "chunk_id": "aea188",
+      "wall_time_seconds": 0.000004125,
+      "exit_code": 0,
+      "original_token_count": 17,
+      "output": "Bibliography entries: 26\nPer-paper analyses: 26\nCoverage complete.\n"
+    }
+  ]
+}

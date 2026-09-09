@@ -1,5 +1,11 @@
 # Sprint progress
 
+## Day-3 work — 2026-09-09
+
+Both reviewed PR layers merged into main; new work starts from `c121f2bb3f247220df39dffd552468678254bbc8` on `task/day-three-20260909`. Nine new synthetic intake tests cover full-day versus partial exposure, duplicate slots, missing paired data, invalid timestamps/weather/uncertainty/provenance and the actual CLI raw-hash boundary. 47 analysis tests pass. A sufficient synthetic CSV exits 3; tampered raw bytes exit 2. No physical pilot or model validation occurred.
+
+The [evidence record](../evidence/task-day3-2026-09-09/README.md) contains checks and limits. Work is locally verified and not yet recorded here as pushed/merged. Current edits belong to this task; original checkouts were preserved. Next: finish verification, commit the bounded change and open the new PR; preserve all stated external gates.
+
 ## Review amendment — 2026-09-09
 
 Read [the reproduced findings, corrections and current checks](../evidence/review-2026-09-09/README.md)

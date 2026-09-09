@@ -1,5 +1,13 @@
 # Enclosure software review packet — partial field-validation handoff
 
+## Day-3 preparation — 2026-09-09
+
+Nine new synthetic intake tests cover full-day versus partial exposure, duplicate slots, missing paired data, invalid timestamps/weather/uncertainty/provenance and the actual CLI raw-hash boundary. 47 analysis tests pass. A sufficient synthetic CSV exits 3; tampered raw bytes exit 2. No physical pilot or model validation occurred.
+
+Review [DAY3_PLAN.md](DAY3_PLAN.md), [deliverable](COLOCATION_PROTOCOL.md), and [commands/evidence](../evidence/task-day3-2026-09-09/README.md). Base: `c121f2bb3f247220df39dffd552468678254bbc8`; new PR branch: `task/day-three-20260909`. No original Owner/External gate is closed. Final source identity is the PR head, reported in its delivery record rather than embedded circularly here.
+
+Actual site/equipment identification, PI/data permission and measurements cannot be supplied by web research.
+
 ## Review amendment — 2026-09-09
 
 Read [the reproduced findings, corrections and current checks](../evidence/review-2026-09-09/README.md)
