@@ -2,7 +2,9 @@
 
 ## Day-3 work — 2026-09-09
 
-Both reviewed PR layers merged into main; new work starts from `c121f2bb3f247220df39dffd552468678254bbc8` on `task/day-three-20260909`. Nine new synthetic intake tests cover full-day versus partial exposure, duplicate slots, missing paired data, invalid timestamps/weather/uncertainty/provenance and the actual CLI raw-hash boundary. 47 analysis tests pass. A sufficient synthetic CSV exits 3; tampered raw bytes exit 2. No physical pilot or model validation occurred.
+Delivery update: the preparation was committed as 500ft and pushed; [day-3 PR](https://github.com/500ft/Enclosure-Research/pull/9) is open against main. Initial implementation source: `245f280667c8fc79204915b5b8ea2f47bb446291` (later review/documentation commits are visible in the PR). This supersedes the pre-push stopping state below. Original day-1/day-2 PRs are merged; this new PR is not merged. Resume from the named unresolved project gates in [DAY3_PLAN.md](DAY3_PLAN.md), not from the already completed push step.
+
+Both reviewed PR layers merged into main; new work starts from `c121f2bb3f247220df39dffd552468678254bbc8` on `task/day-three-20260909`. Ten new synthetic intake tests cover full-day versus partial exposure, duplicate slots, missing paired data, invalid timestamps/weather/uncertainty/provenance and the actual CLI raw-hash boundary. 48 analysis tests pass. A sufficient synthetic CSV exits 3; tampered raw bytes exit 2. No physical pilot or model validation occurred. A further non-object JSON metadata counterexample reproduced a traceback; the CLI now returns diagnostic exit 2 for null/list/string metadata.
 
 The [evidence record](../evidence/task-day3-2026-09-09/README.md) contains checks and limits. Work is locally verified and not yet recorded here as pushed/merged. Current edits belong to this task; original checkouts were preserved. Next: finish verification, commit the bounded change and open the new PR; preserve all stated external gates.
 

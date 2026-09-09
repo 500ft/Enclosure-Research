@@ -15,6 +15,8 @@ IDENTITIES = ("sensor_id", "reference_id", "site_id", "firmware", "clock_basis",
 
 
 def evaluate(rows, metadata):
+    if not isinstance(metadata, dict):
+        raise ValueError("metadata must be a JSON object")
     for key in IDENTITIES:
         if not isinstance(metadata.get(key), str) or not metadata[key].strip():
             raise ValueError("missing declared provenance: " + key)
@@ -65,6 +67,8 @@ def main():
     args = parser.parse_args()
     try:
         metadata = json.loads(args.metadata.read_text())
+        if not isinstance(metadata, dict):
+            raise ValueError("metadata must be a JSON object")
         digest = hashlib.sha256(args.csv_path.read_bytes()).hexdigest()
         if metadata.get("csv_sha256") != digest:
             raise ValueError("csv_sha256 mismatch")

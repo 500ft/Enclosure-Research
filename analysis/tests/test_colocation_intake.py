@@ -97,6 +97,19 @@ class IntakeTests(unittest.TestCase):
             self.assertEqual(invalid.returncode, 2)
             self.assertIn("csv_sha256 mismatch", invalid.stderr)
 
+    def test_nonobject_metadata_is_a_diagnostic_input_error(self):
+        root = Path(__file__).resolve().parents[2]
+        with tempfile.TemporaryDirectory() as directory:
+            raw, meta = Path(directory) / "raw.csv", Path(directory) / "metadata.json"
+            raw.write_text("timestamp\n")
+            for value in (None, [], "invalid"):
+                meta.write_text(json.dumps(value))
+                result = subprocess.run(
+                    [sys.executable, "-m", "analysis.colocation_intake", str(raw), "--metadata", str(meta)],
+                    cwd=root, capture_output=True, text=True)
+                self.assertEqual(result.returncode, 2, result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
