@@ -28,3 +28,7 @@ jobs:
           python analysis/thermal_bias.py --no-figure --table "$RUNNER_TEMP/thermal-day.csv" --night-table "$RUNNER_TEMP/thermal-night.csv"
           diff -u analysis/output/thermal_bias_table.csv "$RUNNER_TEMP/thermal-day.csv"
           diff -u analysis/output/thermal_bias_night_table.csv "$RUNNER_TEMP/thermal-night.csv"
+      - name: Check README links, identity and negative controls
+        run: |
+          python tools/check_presentation.py . "Sensor Enclosure Thermal Design" sensor-enclosure-thermal-design
+          python tools/test_presentation.py

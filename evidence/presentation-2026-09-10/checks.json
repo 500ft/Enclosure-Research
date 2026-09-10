@@ -1,0 +1,64 @@
+{
+  "date": "2026-09-10",
+  "old_repository": "Enclosure-Research",
+  "repository": "500ft/sensor-enclosure-thermal-design",
+  "base_commit": "122037a8e3a82d1d365196df0b7f60178af756e1",
+  "branch": "docs/professional-presentation-20260910",
+  "runtime": "Python 3.11.8\nv22.21.0\ngit version 2.39.5 (Apple Git-154)\n",
+  "baseline_commands": [
+    "python -m compileall -q analysis",
+    "PYTHONPATH=. python -m unittest discover -s analysis/tests -q",
+    "python analysis/check_literature_coverage.py"
+  ],
+  "baseline_start": {
+    "chunk_id": "a78ce0",
+    "wall_time_seconds": 1.00177275,
+    "session_id": 48239,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "baseline_completion": {
+    "chunk_id": "1f1a23",
+    "wall_time_seconds": 4.17e-7,
+    "exit_code": 0,
+    "original_token_count": 84,
+    "output": "----------------------------------------------------------------------\nRan 48 tests in 2.272s\n\nOK\n[table] wrote /var/folders/rm/1f4h8c954_58tny8x94fr7k40000gn/T/tmpqnwdd4vz/bias.csv\n[table] wrote /var/folders/rm/1f4h8c954_58tny8x94fr7k40000gn/T/tmpguzw5ua8/night.csv\nBibliography entries: 26\nPer-paper analyses: 26\nCoverage complete.\n"
+  },
+  "final_start": {
+    "chunk_id": "7caf0a",
+    "wall_time_seconds": 1.001377583,
+    "session_id": 89162,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "final_completion": {
+    "chunk_id": "cdf6d4",
+    "wall_time_seconds": 4.17e-7,
+    "exit_code": 0,
+    "original_token_count": 84,
+    "output": "----------------------------------------------------------------------\nRan 48 tests in 2.027s\n\nOK\n[table] wrote /var/folders/rm/1f4h8c954_58tny8x94fr7k40000gn/T/tmplw71fzog/bias.csv\n[table] wrote /var/folders/rm/1f4h8c954_58tny8x94fr7k40000gn/T/tmpc6eh2228/night.csv\nBibliography entries: 26\nPer-paper analyses: 26\nCoverage complete.\n"
+  },
+  "presentation_gate": {
+    "chunk_id": "409e03",
+    "wall_time_seconds": 0.058850958,
+    "exit_code": 0,
+    "original_token_count": 73,
+    "output": "{\n  \"repository\": \"sensor-enclosure-thermal-design\",\n  \"files_checked\": 5,\n  \"local_links_checked\": 65,\n  \"external_links_not_fetched\": 9,\n  \"issues\": [],\n  \"scientific_validation\": false\n}\n....\n----------------------------------------------------------------------\nRan 4 tests in 0.111s\n\nOK\n"
+  },
+  "preservation": {
+    "chunk_id": "fbedd3",
+    "wall_time_seconds": 0.000002333,
+    "exit_code": 0,
+    "original_token_count": 22,
+    "output": "4\t0\t.github/workflows/ci.yml\n118\t109\tREADME.md\n122037a8e3a82d1d365196df0b7f60178af756e1\n"
+  },
+  "scope": "Repository identity and presentation; no new scientific results or physical tests.",
+  "hosted_checks": "Verify against the candidate commit on the presentation PR; not claimed by this local snapshot.",
+  "thermal_comparison": {
+    "chunk_id": "161a2f",
+    "wall_time_seconds": 0.000003084,
+    "exit_code": 0,
+    "original_token_count": 2923,
+    "output": "Warning: truncated output (original token count: 2923)\nTotal output lines: 129\n\n==============================================================================\nASSUMPTIONS LEDGER (every input; SIMULATION, pending lab data)\n==============================================================================\ninput                        value  units         status                \n------------------------------------------------------------------------------\nG_clear_sky               800-1000  W/m^2         swept/bounded         \nT_air                         30.0  degC          bounded               \nRH_air                        50.0  %             bounded               \nT_sky_offset                  20.0  K             bounded               \nalpha_V0                       0.9  -             bounded               \nalpha_shield                   0.3  -             bounded               \neps_surface                    0.9  -             bounded               \nf_sky_V0                       0.5  -             bounded               \nf_sky_shield                  0.05  -             bounded               \nA_proj_V0                     0.03  m^2           geometry/TODO-from-lab\nA_conv_V0                     0.09  m^2           geometry/TODO-from-lab\nA_proj_shield                0.012  m^2           geometry/TODO-from-lab\nA_conv_shield                 0.02  m^2           geometry/TODO-from-lab\nshield_solar_factor           0.18  -             bounded               \nQ_int_V0                       0.8  W             bounded/TODO-from-lab \nQ_int_shielded                 0.1  W             bounded/TODO-from-lab \nh_free_floor                   5.0  W/m^2K        physics               \nh_wind_slope                   4.0  W/m^2K per (m/s)physics               \nshield_conv_boost              1.4  -             bounded               \nshield_air_preheat_calm         1.2  K             bounded               \npreheat_wind_halflife          1.5  m/s           bounded               \nh_fan_V2                      25.0  W/m^2K        bounded               \nwind_sweep                 0.0-5.0  m/s           swept                 \n------------------------------------------------------------------------------\nNotes:\n  G_clear_sky: Clear-sky global horizontal irradiance on the projected area; sweep band.\n  T_air: Ambient air temperature for the heat-soak case (warm clear day).\n  RH_air: True ambient relative humidity used to anchor the RH-error mapping.\n  T_sky_offset: Clear-sky radiant sky temperature is taken as T_air - 20 K (clear-sky depression).\n  alpha_V0: Solar absorptance of the baseline box surface (dark/unspecified finish, worst-ish case).\n  alpha_shield: Solar absorptance of a light/white high-reflectance shield surface (framework rec.).\n  eps_surface: Long-wave emissivity of painted plastic/printed surface (typical 0.85-0.95).\n  f_sky_V0: Fraction of the baseline box outer area that radiates to the cold sky (upper/side faces); the rest exchanges long-wave with surroundings (ground/mast) at ~ambient.\n  f_sky_shield: Fraction of the shielded sensor e…1423 tokens truncated…a system comparison, not an isolated shielding effect.\n==============================================================================\n G[W/m2]  wind[m/s]  Baseline closed box dT/RHerrPassive multi-plate shield dT/RHerrActively aspirated reference dT/RHerrPainted closed-box control dT/RHerr\n------------------------------------------------------------------------------------------------------------------------------------------------------------\n       0        0.0           -4.0         13.2         -0.0          0.0         -0.0          0.0         -4.0         13.2\n       0        0.5           -3.4         10.9         -0.0          0.0         -0.0          0.0         -3.4         10.9\n       0        1.0           -2.9          9.2         -0.0          0.0         -0.0          0.0         -2.9          9.2\n       0        2.0           -2.3          7.1         -0.0          0.0         -0.0          0.0         -2.3          7.1\n       0        5.0           -1.4          4.2         -0.0          0.0         -0.0          0.0         -1.4          4.2\n------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nRange across wind 0.0-5.0 m/s at G=0 W/m^2:\n  Baseline closed box            dT =  -4.0 (calm) .. -1.4 (windy) degC,  RH_err =    4.2 ..  13.2 %RH\n  Passive multi-plate shield     dT =  -0.0 (calm) .. -0.0 (windy) degC,  RH_err =    0.0 ..   0.0 %RH\n  Actively aspirated reference   dT =  -0.0 (calm) .. -0.0 (windy) degC,  RH_err =    0.0 ..   0.0 %RH\n  Painted closed-box control     dT =  -4.0 (calm) .. -1.4 (windy) degC,  RH_err =    4.2 ..  13.2 %RH\n\n[table] wrote /private/tmp/presentation-thermal-night-20260910.csv\n==============================================================================\nSENSITIVITY (one-at-a-time), reference point G=1000 W/m^2, wind=0.5 m/s\ndelta-T [degC]; shows which uncertain input dominates the bias\n==============================================================================\nperturbation                                       V0 dT     V1 dT\n------------------------------------------------------------------\nbaseline                                            19.4       3.0\nV0 surface painted white (alpha 0.90 -> 0.30)        4.5         -\nV1 shading worse (solar_factor 0.18 -> 0.30)           -       4.4\nV1 no convection boost (1.4 -> 1.0)                    -       3.4\nV1 plate air pre-heat doubled (1.2 -> 2.4 K calm)         -       3.9\nV0 internal load doubled (0.8 -> 1.6 W)             20.1         -\nV0 low emissivity (0.90 -> 0.50)                    26.4         -\n------------------------------------------------------------------\n\nNOTE: All values above are SIMULATION outputs and are the analytical\nbaseline that the conjugate-heat-transfer FEA (docs/cad_fea_plan.md 3.2)\nwill refine. They are predictions pending lab and co-location data; no\nregulatory-grade or certified-performance claim is implied.\n"
+  }
+}

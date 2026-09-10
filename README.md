@@ -1,135 +1,144 @@
-# Enclosure Research
+# Sensor Enclosure Thermal Design
 
-**A research toolkit for evaluating low-cost outdoor sensor boxes across
-sensing, enclosure, power, firmware, calibration, and field reliability.**
+**Separating enclosure-induced sensor bias from the weather being measured:
+analytical models, traceable literature, and a testable day/night pilot.**
 
-[![CI](https://github.com/500ft/Enclosure-Research/actions/workflows/ci.yml/badge.svg)](https://github.com/500ft/Enclosure-Research/actions/workflows/ci.yml)
-[![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Sources: 26](https://img.shields.io/badge/literature_sources-26-276c6b)](literature/literature_matrix.csv)
+[![CI](https://github.com/500ft/sensor-enclosure-thermal-design/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/500ft/sensor-enclosure-thermal-design/actions/workflows/ci.yml)
+[![Evidence: analytical model](https://img.shields.io/badge/evidence-analytical_model-475569)](docs/results.md)
+[![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](.github/workflows/ci.yml)
 
-**[Results](docs/results.md) · [Reproduce](#reproduce-the-analysis) · [Data and figures](docs/data-and-figures.md) · [Manuscript](paper/manuscript_v1.md)**
+[Start here](docs/START_HERE.md) · [Evidence](#evidence-snapshot) ·
+[Quick start](#quick-start) · [Documentation](#documentation) ·
+[Pilot protocol](docs/COLOCATION_PROTOCOL.md)
 
-![Predicted enclosure thermal bias](analysis/figures/thermal_bias.png)
+![Conceptual overview of enclosure comparison, thermal analysis, and validation requirements](docs/media/project-overview.svg)
 
-*Analytical temperature and relative-humidity bias under solar loading. See the
-[results](docs/results.md) for interpretation and [figure lineage](docs/data-and-figures.md)
-for inputs, assumptions, and generation commands.*
+*Conceptual study map. Thermal outputs are analytical predictions; the physical
+pilot is a draft, not an approved or completed experiment.*
 
-## Overview
+## About
 
-Outdoor sensor performance depends on the complete deployed system, not only a
-sensor datasheet. This repository connects four evidence paths:
+An outdoor sensor can report its enclosure's thermal environment instead of the
+ambient air temperature. Solar absorption, airflow, internal heat, and radiation
+all matter. This project compares enclosure choices and prepares the evidence
+needed to decide whether a more complicated shield earns its cost.
 
-- a 26-source literature matrix;
-- reliability analysis for exported deployment logs;
-- a first-order enclosure thermal-bias model; and
-- templates and plans for calibration, CAD, and FEA work.
+The repository contains a first-order heat-balance model, a 26-source literature
+matrix, deployment-reliability analysis, and a guarded intake route for a future
+reference co-location pilot. It deliberately keeps **model predictions,
+external-log observations, and proposed measurements separate**.
 
-The current field-log summary is provisional because deployment history and raw
-exports are maintained outside the repository. The thermal study is an
-analytical model awaiting laboratory comparison.
+| Engineering question | Current answer or boundary |
+| --- | --- |
+| How much improvement comes from surface finish alone? | A painted-box control is included in the analytical comparison |
+| Is midday enough for a first comparison? | No; modeled bias can change sign at night, motivating a full-day pilot |
+| Does good delivery mean good measurement accuracy? | No; reliability accounting and reference-temperature agreement are separate |
+| Has this enclosure been thermally validated? | No; calibration and physical co-location remain pending |
 
-The cheapest comparison matters: at 1000 W/m² and 0.5 m/s the model predicts
-19.4°C rise for the dark baseline, 4.5°C for that baseline painted white, and
-3.0°C for the passive shield. The latter's incremental modeled advantage over
-the painted box is about 1.5°C; the variants also differ in heat coupling and
-convection assumptions. This does not isolate a measured shielding effect.
-The default CSV and figure include the painted control (`V0P`) at every reported
-operating point. See [the matched-finish model comparison](analysis/thermal_bias_results.md#2-bias-vs-variant-table-analytical-system-comparison).
+## Evidence snapshot
 
-```mermaid
-flowchart LR
-    classDef input    fill:#bbdefb,stroke:#1565c0,stroke-width:2px,color:#1f2933,font-weight:bold;
-    classDef process  fill:#b2dfdb,stroke:#00796b,stroke-width:2px,color:#1f2933;
-    classDef core     fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px,color:#1f2933,font-weight:bold;
-    classDef result   fill:#ffe0b2,stroke:#ef6c00,stroke-width:2px,color:#1f2933;
+| Evidence path | What is available | What it does not establish |
+| --- | --- | --- |
+| Literature | [26-source matrix](literature/literature_matrix.csv), [bibliography](paper/references.bib), and [source assessments](ProConsList/README.md) | Measurements of this enclosure |
+| Thermal model | [Equations and assumptions](analysis/thermal_bias_results.md), [day table](analysis/output/thermal_bias_table.csv), and [night table](analysis/output/thermal_bias_night_table.csv) | FEA, calibrated prediction, or physical validation |
+| Reliability accounting | [Schedule-aware metrics](docs/RELIABILITY_METRICS.md) and regression tests | Reproduction of historical percentages without the external raw logs and deployment history |
+| Pilot preparation | [24-hour protocol draft](docs/COLOCATION_PROTOCOL.md) and [intake checker](analysis/colocation_intake.py) | PI permission, acquired measurements, or an approved campaign |
 
-    L[/Literature records/]:::input --> S[System requirements]:::process
-    D[/External deployment logs/]:::input --> R[Reliability analysis]:::process
-    A[/Model assumptions/]:::input --> T{{Thermal-bias sweep}}:::core
-    S --> C(Design comparison):::result
-    R --> C
-    T --> C
-```
+At `G = 1000 W/m²` and `wind = 0.5 m/s`, the model predicts temperature rises of
+**19.4 °C** for the dark box, **4.5 °C** for the same box painted white, and
+**3.0 °C** for the passive shield. The incremental modeled improvement over paint
+is about **1.5 °C**, not the 16.4 °C dark-box contrast. Geometry, heat coupling,
+and convection also differ, so this is a system comparison—not an isolated
+shielding effect. [Source and interpretation](docs/results.md#thermal-bias-model).
 
-*Shapes: parallelogram = input · rectangle = process · hexagon = core method · rounded = result.*
+![Analytical enclosure temperature and relative-humidity bias under solar loading](analysis/figures/thermal_bias.png)
 
-## Reproduce the analysis
+*Committed analytical-model output, not a field measurement. The painted control
+is included in the default figure and table. See [figure lineage](docs/data-and-figures.md#thermal-bias-plot)
+before interpreting the comparison.*
 
-Create an environment and regenerate the repository-contained checks and
-thermal figure:
+## Quick start
+
+Python 3.11 is the CI target. These first-run checks use repository-contained
+inputs and do not require private deployment exports or lab equipment.
 
 ```bash
+git clone https://github.com/500ft/sensor-enclosure-thermal-design.git
+cd sensor-enclosure-thermal-design
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
+python -m compileall -q analysis
+PYTHONPATH=. python -m unittest discover -s analysis/tests -v
 python analysis/check_literature_coverage.py
-python -m unittest discover -s analysis/tests -v
-python analysis/thermal_bias.py
 ```
 
-Analyze the two deployment exports separately:
+To regenerate the analytical tables **without replacing committed outputs**:
 
 ```bash
-python analysis/analyze_deployment_logs.py \
-  --data-dir /path/to/DataEnclosure \
-  --out-dir analysis/output
+OUT_DIR="$(mktemp -d)"
+python analysis/thermal_bias.py --no-figure \
+  --table "$OUT_DIR/thermal-day.csv" \
+  --night-table "$OUT_DIR/thermal-night.csv"
+diff -u analysis/output/thermal_bias_table.csv "$OUT_DIR/thermal-day.csv"
+diff -u analysis/output/thermal_bias_night_table.csv "$OUT_DIR/thermal-night.csv"
 ```
 
-The input directory must contain `data1.3_24 - Sheet1.csv` and
-`data2_5_29 - Sheet1.csv`. Those raw files are not committed. The script writes
-an audit report, four plots, and filtered subsets; see
-[`docs/data-and-figures.md`](docs/data-and-figures.md) before interpreting them.
-
-New reliability runs report scheduled completeness only when intended window,
-cadence, and matching tolerance are supplied. Without them it is unavailable;
-the historical 91.4% is not silently recalculated. The standalone metrics CLI
-and channel-specific availability definitions are in
-[`docs/RELIABILITY_METRICS.md`](docs/RELIABILITY_METRICS.md).
+No diff means the tables reproduce for that environment. It does not validate
+their assumptions. The [reading guide](docs/START_HERE.md#reviewer-reproduce-the-contained-analysis)
+covers runtime provenance, external-data prerequisites, and the intake exits.
 
 ## Documentation
 
-| Document | Purpose |
+| Start with | What it answers |
 | --- | --- |
-| [`docs/results.md`](docs/results.md) | Current field-log and model results, kept separate from the repository overview |
-| [`docs/data-and-figures.md`](docs/data-and-figures.md) | Data sources, filters, equations, plot lineage, and reproduction boundaries |
-| [`docs/figure-manifest.json`](docs/figure-manifest.json) | Machine-readable generator/input/output map for committed result figures |
-| [`analysis/thermal_bias_results.md`](analysis/thermal_bias_results.md) | Full thermal-model assumptions and sensitivity results |
-| [`paper/manuscript_v1.md`](paper/manuscript_v1.md) | Working paper |
-| [`literature/literature_matrix.csv`](literature/literature_matrix.csv) | Source-level evidence extraction |
-| [`docs/cad_fea_plan.md`](docs/cad_fea_plan.md) | Planned geometry and solver work |
-
-## Status
-
-- **Done (literature):** 26-source literature matrix, per-source pros/cons
-  analyses, and a cross-source synthesis.
-- **Done (model):** first-order analytical thermal-bias model with a
-  sensitivity sweep; every number is a simulation output, not a measurement.
-- **Provisional (external logs):** reliability audit of two deployment-log
-  exports kept outside the repository; delivery and continuity metrics only,
-  no accuracy claims.
-- **Pending:** heat-soak, reference co-location, and CHT/FEA comparisons are
-  planned but not started; no experimental accuracy or calibration results
-  exist yet. See [`docs/cad_fea_plan.md`](docs/cad_fea_plan.md).
-
-## Repository map
+| [Reading guide](docs/START_HERE.md) | Where should a recruiter, reviewer, or contributor begin? |
+| [Results](docs/results.md) | Which outputs are modeled, provisional, or unavailable? |
+| [Data and figures](docs/data-and-figures.md) · [Figure manifest](docs/figure-manifest.json) | Where did each plot and input come from? |
+| [Model assumptions](analysis/thermal_bias_results.md) | Which geometry, radiation, and convection terms drive the comparison? |
+| [Pilot protocol](docs/COLOCATION_PROTOCOL.md) | What must be specified before any physical comparison? |
+| [Reliability definitions](docs/RELIABILITY_METRICS.md) · [Provenance request](docs/DEPLOYMENT_PROVENANCE_REQUEST.md) | Which denominators and external records are needed? |
+| [Working manuscript](paper/manuscript_v1.md) | How are the literature and analysis assembled? |
+| [CAD/FEA plan](docs/cad_fea_plan.md) | What geometry and higher-fidelity work remain proposed? |
+| [Review index](docs/REVIEW_READY.md) | Which checks and counterexamples can another reviewer reproduce? |
 
 ```text
-analysis/      data checks, reliability analysis, thermal model, and figures
-literature/    source matrix and cross-source comparisons
-ProConsList/   sensor and enclosure assessment for each bibliography entry
-paper/         manuscript source and bibliography
-templates/     baseline, deployment, and calibration data templates
-deliverables/  rendered reports and summaries
-docs/          results, provenance, and plans
+analysis/      thermal and reliability models, intake checks, tests, and figures
+literature/    source matrix and cross-source design comparisons
+ProConsList/   source-by-source evidence assessment
+paper/         working manuscript and bibliography
+templates/     baseline, deployment, and calibration record templates
+docs/          interpretation, methods, and review contracts
+evidence/      retained checks and diagnostic reproductions
 ```
 
-## Contributing
+## Next gate and limitations
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md). Literature changes must update the
-bibliography, matrix, summary, and corresponding `ProConsList/` entry together.
+The next measurement step is a **prospectively approved day/night co-location
+pilot** with identified hardware, calibrated reference, site permission, and an
+as-built uncertainty treatment. The [protocol](docs/COLOCATION_PROTOCOL.md) is a
+draft. Its data-quality targets are proposed; the model's −4 °C night and
++8–23 °C day scenarios are **not acceptance limits**.
 
-## License
+The intake checker distinguishes malformed data, sufficient synthetic fixtures,
+and a physical-labeled pilot eligible for human review. A successful intake does
+not authenticate provenance or produce a thermal-validation verdict.
 
-No open-source license is included. Contact the repository owner before reuse
-beyond the permissions provided by copyright law.
+Historical deployment percentages and plots depend on raw exports outside this
+repository and an unconfirmed deployment window. They remain reported but
+unverified; no revised field percentage is claimed. The current thermal model
+is lumped and steady-state, and one future 24-hour campaign would not establish
+seasonal or general accuracy.
+
+## Contributing and reuse
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md). Literature changes must keep the
+bibliography, matrix, source assessment, and synthesis synchronized. Analysis
+changes need a reproduction, units, input provenance, and relevant tests.
+
+No open-source license is included; this presentation update grants no new reuse
+permissions. Contact the repository owner about licensing or access to nonpublic
+data. No publication identifier is claimed here. When referencing the work,
+identify the repository, exact commit, and the modeled or provisional nature of
+the result. See [repository identity](docs/REPOSITORY_IDENTITY.md) for the rename;
+the working manuscript and historical artifacts retain their original identity.
