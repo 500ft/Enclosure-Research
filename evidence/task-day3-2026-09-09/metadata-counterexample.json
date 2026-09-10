@@ -1,0 +1,11 @@
+{
+  "date": "2026-09-09",
+  "candidate": "245f280667c8fc79204915b5b8ea2f47bb446291",
+  "input": "JSON metadata null, [] or a string instead of an object",
+  "before": "New test failed: CLI returned 1 with AttributeError traceback on null",
+  "fix": "Require a metadata object at both CLI and evaluation boundaries",
+  "after": "Full analysis suite: 48 tests PASS; all three malformed metadata shapes exit 2 without traceback",
+  "command": "PYTHONPATH=. python -m unittest discover -s analysis/tests -q",
+  "exit_code": 0,
+  "scope": "Synthetic developer regression, not independent evaluation or field validation"
+}

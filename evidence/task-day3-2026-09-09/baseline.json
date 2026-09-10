@@ -1,0 +1,20 @@
+{
+  "date": "2026-09-09",
+  "base": "c121f2bb3f247220df39dffd552468678254bbc8",
+  "command": "PYTHONPATH=. python -m unittest discover -s analysis/tests -q; python analysis/check_literature_coverage.py",
+  "initial": {
+    "chunk_id": "d385a5",
+    "wall_time_seconds": 1.000187292,
+    "session_id": 71283,
+    "original_token_count": 14,
+    "output": "c121f2bb3f247220df39dffd552468678254bbc8\nPython 3.11.8\n"
+  },
+  "completion": {
+    "chunk_id": "f931be",
+    "wall_time_seconds": 6.25e-7,
+    "exit_code": 0,
+    "original_token_count": 84,
+    "output": "----------------------------------------------------------------------\nRan 38 tests in 1.979s\n\nOK\n[table] wrote /var/folders/rm/1f4h8c954_58tny8x94fr7k40000gn/T/tmpcimbbmwr/bias.csv\n[table] wrote /var/folders/rm/1f4h8c954_58tny8x94fr7k40000gn/T/tmpznyr3vyp/night.csv\nBibliography entries: 26\nPer-paper analyses: 26\nCoverage complete.\n"
+  },
+  "scope": "Baseline checks are repository integrity checks, not scientific validation"
+}
