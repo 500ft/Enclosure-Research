@@ -1,5 +1,11 @@
 # Sprint progress
 
+## 2026-09-11 — evidence-gap correction
+
+The [current correction](specs/evidence-gap-correction/test-report.md) supersedes any interpretation that earlier preparation closed a physical, approval, or source-review gate. Work is on `fix/evidence-gaps-20260911` from current renamed main; historical entries below retain their original dates and PR snapshots. The original day-3 and presentation PRs are now merged, but this correction is a new reviewable change, not an asserted merge or publication.
+
+Each omitted or incomplete recommendation is accounted for separately in the current correction and existing task ledgers. No owner signature, measurement, PI conversation, imagery judgment, disclosure approval or independent review was fabricated. Exact tests, scope and next inputs are linked from the correction record; actual delivery state is established by its PR.
+
 ## Evidence-gap correction — 2026-09-11
 
 This current entry supersedes ambiguous preparation/completion language in the
