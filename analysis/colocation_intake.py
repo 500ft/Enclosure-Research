@@ -25,6 +25,9 @@ def evaluate(rows, metadata):
     uncertainty = metadata.get("paired_u95_c")
     if type(uncertainty) not in {int, float} or not math.isfinite(uncertainty) or uncertainty <= 0:
         raise ValueError("paired_u95_c must be finite and positive")
+    for key in ("window_start", "window_end"):
+        if not isinstance(metadata.get(key), str):
+            raise ValueError(key + " must be an ISO timestamp string")
     start, end = (parse_timestamp(metadata[k]) for k in ("window_start", "window_end"))
     if start.utcoffset() is None or end.utcoffset() is None:
         raise ValueError("window must declare a timezone")

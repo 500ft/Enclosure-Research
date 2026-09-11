@@ -27,6 +27,15 @@ def fixture():
 
 
 class IntakeTests(unittest.TestCase):
+    def test_nonstring_window_timestamps_are_diagnostic_input_errors(self):
+        for key in ("window_start", "window_end"):
+            for value in (None, [], {}, 42, True):
+                with self.subTest(key=key, value=value):
+                    rows, metadata = fixture()
+                    metadata[key] = value
+                    with self.assertRaisesRegex(ValueError, key):
+                        evaluate(rows, metadata)
+
     def test_complete_synthetic_data_never_physical_validation(self):
         rows, metadata = fixture()
         result = evaluate(rows, metadata)

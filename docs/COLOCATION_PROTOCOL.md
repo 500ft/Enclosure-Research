@@ -37,6 +37,15 @@ Model agreement requires an as-built prediction with propagated model/input unce
 
 New CLI: `python -m analysis.colocation_intake CSV_PATH --metadata METADATA_JSON`; capitalized paths are placeholders for real artifacts, not files claimed to exist.
 
+Run from the repository root. The requested compatibility name is also usable as
+`python -m analysis.intake_gate CSV_PATH --metadata METADATA_JSON`.
+`analysis/intake_gate.py` delegates to the existing canonical
+`analysis/colocation_intake.py`; it is not a separate admission policy.
+Both module entrypoints have tested identical output and exit codes. See
+[evidence reconciliation](specs/evidence-gap-correction/test-report.md) and the
+[owner session packet](COLOCATION_OWNER_SESSION.md) before treating software
+readiness as permission to acquire data.
+
 CSV header exactly: `timestamp,sensor_temperature,reference_temperature,solar_w_m2,wind_m_s`.
 
 Metadata requires `window_start,window_end,sensor_id,reference_id,site_id,firmware,clock_basis,calibration_reference,uncertainty_reference,permission_reference,protocol_reference,evidence_kind,paired_u95_c,csv_sha256`. Identity/reference fields are nonempty strings linking reviewable records; `evidence_kind` is physical or synthetic. The CSV SHA-256 binds raw bytes. No sample “approved” physical manifest is provided.
