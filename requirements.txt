@@ -1,5 +1,10 @@
-matplotlib>=3.8
-numpy>=1.26
-pandas>=2.2
-python-docx>=1.1
-reportlab>=4.0
+# Exact pins for CI and reproduction. Loose ranges live in requirements.in;
+# regenerate with: python -m venv v && v/bin/pip install -r requirements.in && v/bin/pip freeze | grep -E '^(numpy|pandas|matplotlib|python-docx|reportlab)==' > requirements.txt
+# Resolved 2026-09-11 on Python 3.11 (the CI interpreter). The byte-exact thermal-table gate
+# was verified identical under these pins AND under the range floor (numpy 1.26.4, pandas 2.2.0,
+# matplotlib 3.8.0), so pinning changes attribution, not today's result.
+matplotlib==3.11.2
+numpy==2.4.6
+pandas==3.0.5
+python-docx==1.2.0
+reportlab==5.0.1
