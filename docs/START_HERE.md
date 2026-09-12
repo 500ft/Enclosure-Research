@@ -82,3 +82,7 @@ future work without claiming it exists. No open-source license is included;
 this guide grants no new reuse or disclosure permission.
 
 See [repository identity](REPOSITORY_IDENTITY.md) for the rename and formatting references.
+
+## September 11 completion correction
+
+Read the [item-by-item correction](specs/evidence-gap-correction/test-report.md) before interpreting a prepared protocol, software check, or search export as a completed research gate. It identifies actual deliverables and the remaining measurement, review, or source-reading work separately.

@@ -1,5 +1,35 @@
 # Sprint progress
 
+## 2026-09-11 — evidence-gap correction
+
+The [current correction](specs/evidence-gap-correction/test-report.md) supersedes any interpretation that earlier preparation closed a physical, approval, or source-review gate. Work is on `fix/evidence-gaps-20260911` from current renamed main; historical entries below retain their original dates and PR snapshots. The original day-3 and presentation PRs are now merged, but this correction is a new reviewable change, not an asserted merge or publication.
+
+Each omitted or incomplete recommendation is accounted for separately in the current correction and existing task ledgers. No owner signature, measurement, PI conversation, imagery judgment, disclosure approval or independent review was fabricated. Exact tests, scope and next inputs are linked from the correction record; actual delivery state is established by its PR.
+
+## Evidence-gap correction — 2026-09-11
+
+This current entry supersedes ambiguous preparation/completion language in the
+historical entries below. Baseline clean main was
+`182cb1f7bfa7905c09dc465cc559267d416f16c5`; correction branch is
+`fix/evidence-gaps-20260911`. EN-D03 already had an executable
+`analysis/colocation_intake.py` and tests; its deliverable cell omitted them.
+The cell is corrected, not used to claim a newly implemented physical validator.
+The requested `analysis/intake_gate.py` is now a tested delegating module CLI.
+
+The authoritative [ledger](SPRINT_TASKS.csv) now explicitly separates EN-R01
+(draft protocol preparation done), EN-R02 (executable software verification done)
+and EN-R03 (actual co-location acquisition/review blocked). A malformed timestamp
+metadata regression exposed a traceback; the intake now returns diagnostic exit
+2. All 52 analysis tests pass, including identical behavior through both module
+names. Tests generate synthetic fixtures, including deliberately physical-labeled
+routing cases; these are not real measurements or independent validation.
+
+See the [correction evidence](specs/evidence-gap-correction/test-report.md) and
+[owner session packet](COLOCATION_OWNER_SESSION.md), prepared but not sent or
+scheduled. PI approval, actual equipment/calibration, protocol freeze and lab
+acquisition remain blocked. No new model-derived acceptance tolerance, data,
+research result, license change, push or merge is part of this correction.
+
 ## Day-3 work — 2026-09-09
 
 Delivery update: the preparation was committed as 500ft and pushed; [day-3 PR](https://github.com/500ft/Enclosure-Research/pull/9) is open against main. Initial implementation source: `245f280667c8fc79204915b5b8ea2f47bb446291` (later review/documentation commits are visible in the PR). This supersedes the pre-push stopping state below. Original day-1/day-2 PRs are merged; this new PR is not merged. Resume from the named unresolved project gates in [DAY3_PLAN.md](DAY3_PLAN.md), not from the already completed push step.
